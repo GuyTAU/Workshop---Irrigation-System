@@ -27,6 +27,9 @@ import java.awt.Canvas;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.border.TitledBorder;
+
+import misc.ControllerExecutorException;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -289,7 +292,12 @@ public class MyWindow extends JFrame {
 		Button button_3 = new Button("Update state");
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gm.updateState();
+				try {
+					gm.updateState();
+				} catch (ControllerExecutorException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				System.out.println("pushed to controller");
 				updatePicture();
 			}
@@ -389,12 +397,7 @@ public class MyWindow extends JFrame {
 		textField_3.setBounds(157, 295, 24, 19);
 		panel.add(textField_3);
 		upperBoundField = textField_3;
-		if (textField_3.getText().equals("")) {
-			this.gm.ENVupperBound = 0;
-		}
-		else {
-			this.gm.ENVupperBound = Integer.parseInt(textField_3.getText());
-		}
+
 		
 		
 		/*

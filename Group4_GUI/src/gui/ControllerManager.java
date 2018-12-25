@@ -1,7 +1,9 @@
 package gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDD.BDDIterator;
@@ -29,13 +31,11 @@ public class ControllerManager {
 
 	/*** SYS vars ***/
 	int SYSirrigationFlow;
-	int SYStemperatureDecEffect;
 	boolean SYSdeviationAlert;
 
+	/*** Used for parsing controller output ***/
+	Map<String, String> curValues;
 	/*** Controller ***/
-	private BDD currentState;
-	private PlayerModule ctrl;
-	private boolean initialState = true;
 	private int stateNum = 0; //our counter for counting states.
 	ControllerExecutor ctrlExec;
 
@@ -45,30 +45,26 @@ public class ControllerManager {
 		ENVmoistureLevel = (int) Math.floor(Math.random() * 15);
 		//loadController();
 		ctrlExec = new ControllerExecutor();
+		curValues = new HashMap<String, String>();
 	}
 	
 	/**
+	 * @throws ControllerExecutorException 
 	 * 
 	 */
-	public void updateState() {
+	public void updateState() throws ControllerExecutorException {
 		
+		//Need to get a random value for moisture.
 		ENVmoistureLevel = 3;
 		//Set controller values
-		try {
-			ctrlExec.setInputValue("rainPower", "" + ENVrainPower);
-			ctrlExec.setInputValue("hour", "" + ENVtime);
-			ctrlExec.setInputValue("temperature", "" + ENVtemperature);
-			ctrlExec.setInputValue("mode", "" + ENVmode);
-			ctrlExec.setInputValue("manualModeUserFlow", "" + ENVmanualModeUserFlow);
-			ctrlExec.setInputValue("moistureLevel", "" + ENVmoistureLevel);
-			ctrlExec.setInputValue("lowerBound", "" + ENVlowerBound);
-			ctrlExec.setInputValue("upperBound", "" + ENVupperBound);
-		} catch (ControllerExecutorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		//etc.
+		ctrlExec.setInputValue("rainPower", "" + ENVrainPower);
+		ctrlExec.setInputValue("hour", "" + ENVtime);
+		ctrlExec.setInputValue("temperature", "" + ENVtemperature);
+		ctrlExec.setInputValue("mode", "" + ENVmode);
+		ctrlExec.setInputValue("manualModeUserFlow", "" + ENVmanualModeUserFlow);
+		//ctrlExec.setInputValue("moistureLevel", "" + ENVmoistureLevel);
+		//ctrlExec.setInputValue("lowerBound", "" + ENVlowerBound);
+		//ctrlExec.setInputValue("upperBound", "" + ENVupperBound);
 		
 		
 		//Try to update the state of the controller, provided the above user inputs
@@ -85,94 +81,24 @@ public class ControllerManager {
 			//The controller execution has terminated
 			return;
 		}
+		
+		
+		curValues = ctrlExec.getCurValues("rainPower", "hour", "temperature", "mode", "manualModeUserFlow", "manualModeUserFlow",
+				"moistureLevel", "lowerBound", "upperBound", "irrigationFlow", "deviationAlert");
+		//Next input values
+		ENVrainPower = Integer.parseInt(curValues.get("rainPower"));
+		ENVtime = Integer.parseInt(curValues.get("hour"));
+		ENVtemperature = Integer.parseInt(curValues.get("temperature"));
+		ENVmode = Integer.parseInt(curValues.get("mode"));
+		ENVmanualModeUserFlow = Integer.parseInt(curValues.get("manualModeUserFlow"));
+		ENVmoistureLevel = Integer.parseInt(curValues.get("moistureLevel"));
+		ENVlowerBound = Integer.parseInt(curValues.get("lowerBound"));
+		ENVupperBound = Integer.parseInt(curValues.get("upperBound"));
+		//Next output values
+		SYSirrigationFlow = Integer.parseInt(curValues.get("irrigationFlow"));
+		SYSdeviationAlert = Boolean.parseBoolean(curValues.get("deviationAlert"));
+		
 	}
 		
-		
-		
-		//TODO: get values from controller 
-		//for example:
-		
-//		curValues = ctrlExec.getCurValues(BANANA_0, BANANA_1, MONKEY_0, MONKEY_1);
-//		//Next input values
-//		banana[0] = Integer.parseInt(curValues.get(BANANA_0));
-//		banana[1] = Integer.parseInt(curValues.get(BANANA_1));
-//		
-//		//Next output values
-//		monkey[0] = Integer.parseInt(curValues.get(MONKEY_0));
-//		monkey[1] = Integer.parseInt(curValues.get(MONKEY_1));
-		
-		
-		
-		
-		
-		
-		
-//		for (String s : stateVals) {
-//			String[] val = s.split(":");
-//			if ("rainPower".equals(val[0])) {
-//				ENVrainPower = Integer.parseInt(val[1]);
-//				System.out.print("rainPower: " + ENVrainPower + "," );
-//			}
-//			if ("hour".equals(val[0])) {
-//				ENVtime = Integer.parseInt(val[1]);
-//				System.out.print("time: " + ENVtime + "," );
-//			}
-//			if ("temperature".equals(val[0])) {
-//				ENVtemperature = Integer.parseInt(val[1]);
-//				System.out.print("temp: " + ENVtemperature + "," );
-//			}
-//			if ("mode".equals(val[0])) {
-//				ENVmode = Integer.parseInt(val[1]);
-//				System.out.print("mode: " + ENVmode + "," );
-//			}
-//			if ("manualModeUserFlow".equals(val[0])) {
-//				ENVmanualModeUserFlow = Integer.parseInt(val[1]);
-//				System.out.print("manualModeUserFlow: " + ENVmanualModeUserFlow + "," );
-//			}
-//			if ("moistureLevel".equals(val[0])) {
-//				ENVmoistureLevel = Integer.parseInt(val[1]);
-//				System.out.print("moistureLevel: " + ENVmoistureLevel + "," );
-//			}
-//			if ("lowerBound".equals(val[0])) {
-//				ENVlowerBound = Integer.parseInt(val[1]);
-//				System.out.print("lowerBound: " + ENVlowerBound + "," );
-//			}
-//			if ("upperBound".equals(val[0])) {
-//				ENVupperBound = Integer.parseInt(val[1]);
-//				System.out.print("upperBound: " + ENVupperBound + "," );
-//			}
-//			if ("irrigationFlow".equals(val[0])) {
-//				SYSirrigationFlow = Integer.parseInt(val[1]);
-//				System.out.print("irrigationFlow: " + SYSirrigationFlow + "," );
-//			}
-//			if ("deviationAlert".equals(val[0])) {
-//				SYSdeviationAlert = Boolean.parseBoolean(val[1]);
-//				System.out.print("deviationAlert: " + SYSdeviationAlert + "," );
-//			}
-//			if ("temperatureDecEffect".equals(val[0])) {
-//				SYStemperatureDecEffect = Integer.parseInt(val[1]);
-//				System.out.print("temperatureDecEffect: " + SYStemperatureDecEffect + "," );
-//			}
-//		}
-//	}
-
-	private void loadController() {
-		BDDPackage.setCurrPackage(BDDPackage.JTLV);
-
-		try {
-			SaveLoadWithDomains.loadStructureAndDomains("out/vars.doms");
-			BDD init = Env.loadBDD("out/controller.init.bdd");
-			init = init.exist(Env.globalPrimeVars());
-			BDD trans = Env.loadBDD("out/controller.trans.bdd");
-
-			ctrl = new PlayerModule();
-			ctrl.conjunctTrans(trans);
-			ctrl.conjunctInitial(init);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		currentState = ctrl.initial().id();
-		initialState = true;
-	}
 
 }
