@@ -6,6 +6,9 @@ import java.awt.Image;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import javax.swing.border.EmptyBorder;
 
 import sun.misc.GC;
@@ -296,17 +299,23 @@ public class MyWindow extends JFrame {
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//take value of lower bound and upper bound
+				boolean lowerSet = false;
+				boolean upperSet = true;
 				if (textField_1.getText().equals("")) {
-					gm.ENVupperBound = 4; //default value
+					JOptionPane.showMessageDialog(contentPane, "Input is missing", "Upper bound value was not inserted", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				else {
 					gm.ENVupperBound = Integer.parseInt(textField_1.getText());
+					upperSet = true;
 				}
 				if (textField_3.getText().equals("")) {
-					gm.ENVlowerBound = 7; //default value
+					JOptionPane.showMessageDialog(contentPane, "Input is missing", "Lower bound value was not inserted", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				else {
 					gm.ENVlowerBound = Integer.parseInt(textField_3.getText());
+					lowerSet = true;
 				}
 				//Push value to controller and get outputs.
 				try {
