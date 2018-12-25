@@ -116,6 +116,7 @@ public class ControllerManager {
 		}
 		
 		
+		
 		curValues = ctrlExec.getCurValues("rainPower", "hour", "temperature", "mode", "manualModeUserFlow", "manualModeUserFlow",
 				"moistureLevel", "lowerBound", "upperBound", "irrigationFlow", "deviationAlert");
 		//Next input values

@@ -31,6 +31,8 @@ import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.border.TitledBorder;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 import misc.ControllerExecutorException;
 
 import javax.swing.UIManager;
@@ -43,6 +45,8 @@ import java.awt.TextArea;
 import javax.swing.JTextPane;
 //import com.jgoodies.forms.factories.DefaultComponentFactory;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -76,7 +80,7 @@ public class MyWindow extends JFrame {
 	boolean lowerBoundSet = false;
 	boolean upperBoundSet = false;
 
-
+	static Timer timer;
 	
 	
 	
@@ -321,30 +325,31 @@ public class MyWindow extends JFrame {
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//take value of lower bound and upper bound
-				if (upperBoundtextField.getText().equals("")) {
-					JOptionPane.showMessageDialog(contentPane, "Upper bound value was not inserted", "Input is missing", JOptionPane.ERROR_MESSAGE);
+				int lowerBound, upperBound;
+				try {
+					upperBound = Integer.parseInt(upperBoundtextField.getText());
+					lowerBound = Integer.parseInt(lowerBoundTextField.getText());
+				} catch(NumberFormatException nfe) {
+					JOptionPane.showMessageDialog(contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				else {
-					gm.ENVupperBound = Integer.parseInt(upperBoundtextField.getText());
-					if (gm.ENVupperBound > 15 || gm.ENVupperBound < 0) {
-						JOptionPane.showMessageDialog(contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-					upperBoundSet = true;
-				}
-				if (lowerBoundTextField.getText().equals("")) {
-					JOptionPane.showMessageDialog(contentPane, "Lower bound value was not inserted", "Input is missing", JOptionPane.ERROR_MESSAGE);
+				if(upperBound <= lowerBound) {
+					JOptionPane.showMessageDialog(contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				else {
-					gm.ENVlowerBound = Integer.parseInt(lowerBoundTextField.getText());
-					if (gm.ENVlowerBound > 15 || gm.ENVlowerBound < 0) {
-						JOptionPane.showMessageDialog(contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-					lowerBoundSet = true;
+				gm.ENVupperBound = Integer.parseInt(upperBoundtextField.getText());
+				if (upperBound > 15 || upperBound < 0) {
+					JOptionPane.showMessageDialog(contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
+				gm.ENVupperBound = upperBound;
+				upperBoundSet = true;
+				if (lowerBound > 15 || lowerBound < 0) {
+					JOptionPane.showMessageDialog(contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				gm.ENVlowerBound = Integer.parseInt(lowerBoundTextField.getText());
+				lowerBoundSet = true;
 				//Check all value were set by user
 				if (!tempSet) {
 					JOptionPane.showMessageDialog(contentPane, "You must set Temperature in order to proceed", "Input is missing", JOptionPane.ERROR_MESSAGE);
@@ -508,6 +513,11 @@ public class MyWindow extends JFrame {
 		contentPane.add(button_2);
 		
 		Button button_4 = new Button("Stop Simulation");
+		button_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				timer.stop();
+			}
+		});
 		button_4.setBounds(634, 240, 140, 50);
 		contentPane.add(button_4);
 		
@@ -570,9 +580,12 @@ public class MyWindow extends JFrame {
 	}
 	
 	void updatePicture() {
+		lowerBoundTextField.setText(gm.ENVlowerBound+"");
+		upperBoundtextField.setText(gm.ENVupperBound+"");
+
 		this.alertLabel.setVisible(gm.SYSdeviationAlert);
-		this.upperBoundField.setEditable(false); //once decided = cannot be changed
-		this.lowerBoundField.setEditable(false); //once decided = cannot be changed
+		this.upperBoundtextField.setEditable(false); //once decided = cannot be changed
+		this.lowerBoundTextField.setEditable(false); //once decided = cannot be changed
 		this.timeLabel.setText(("Time: " + String.valueOf(gm.ENVtime) + ":00"));
 		this.moistureLevelLabel.setText(("Moisture Level: " + String.valueOf(gm.ENVmoistureLevel)));
 		this.irrigationFlowLabel.setText((String.valueOf(gm.SYSirrigationFlow)));
@@ -618,22 +631,34 @@ public class MyWindow extends JFrame {
 	
 	
 	
-	
+
 	public static void simulation1(MyWindow window) throws InterruptedException, ControllerExecutorException {
-		int i=0;
-		while (i<10) {
-			System.out.println("here");
-			window.gm.ENVrainPower = 0;
-			window.gm.ENVtemperature = 2;
-			window.gm.ENVmode = 0;
-			window.gm.ENVmanualModeUserFlow = 0; //Doesn't matter
-			window.gm.ENVlowerBound = 10;
-			window.gm.ENVupperBound = 12;
-			window.gm.updateState();
-			window.updatePicture();
-			window.revalidate();
-			Thread.sleep(1000);
-			i++;
-		}
+		
+		ActionListener simListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				window.gm.ENVrainPower = 0;
+				window.gm.ENVtemperature = 2;
+				window.gm.ENVmode = 0;
+				window.gm.ENVmanualModeUserFlow = 0; //Doesn't matter
+				window.gm.ENVlowerBound = 10;
+				window.gm.ENVupperBound = 12;
+				try {
+					window.gm.updateState();
+				} catch (ControllerExecutorException e1) {
+					e1.printStackTrace();
+				}
+				window.updatePicture();
+				window.revalidate();
+			}
+		};
+		
+		timer = new Timer(1000,simListener);
+		timer.setInitialDelay(0);
+		timer.start();
 	}
+	
+	
+
 }
