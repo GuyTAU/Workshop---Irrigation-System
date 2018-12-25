@@ -1,0 +1,87 @@
+/*
+ * Auto-generated Spectra file
+ */
+ 
+import "./patterns/DwyerPatterns.spectra"
+ 
+module IrrigationSystem			
+
+
+/*******************/
+/***** DEFINES *****/
+/*******************/	
+define isBelowRange := (moistureLevel < lowerBound);
+define isAboveRange := (moistureLevel > upperBound);
+
+define effectiveFlow := irrigationFlow + rainPower;
+define temperatureDecEffect := temperature +1;
+
+define nextIsNight := (((hour >= 21) & (hour <= 23)) | ((hour >= 0) & (hour <= 4)));
+
+/****************************/
+/***** SYSTEM VARIABLES *****/
+/****************************/
+sys Int (0..5) irrigationFlow; //flow provided by the irrigation system
+sys boolean deviationAlert;
+
+/*********************************/
+/***** ENVIRONMENT VARIABLES *****/
+/*********************************/
+//irrigation mode (SWITCHES)
+env Int (0..1) mode; //0 - for automatic, 1 - for manual
+env Int (0..5) manualModeUserFlow;
+
+//SENSORS
+env Int (0..3) rainPower;
+
+env Int(0..23) hour;
+
+env Int (0..15) moistureLevel;
+
+env Int (0..2) temperature; // 0 - Cold, 1 - Medium, 2 - Hot
+
+//Bounds of desired moisture level for our plant:
+env Int (0..15) lowerBound; //NOTE: The eclipse shows only some of the starting states, since its number is quite big.
+env Int (0..15) upperBound; //NOTE: The eclipse shows only some of the starting states, since its number is quite big.
+
+
+/***********************/
+/***** ASSUMPTIONS *****/
+/***********************/
+//temperature assumptions
+asm G nextIsNight -> ((next(temperature) = 0) | (next(temperature) = 1));
+
+//Bounds cannot be changed once chosen by the user.
+asm G (next (upperBound) = upperBound);
+asm G (next (lowerBound) = lowerBound);
+asm (lowerBound < upperBound);
+
+//Temperature doesn't change drastically
+asm G (temperature = 0) -> (!(next(temperature) = 2));
+asm G (temperature = 2) -> (!(next(temperature) = 0));
+
+
+//hour assumptions
+asm G (hour = 23) -> (next(hour) = 23 | next(hour) = 0);  //keep increasing modulo 24
+asm G (!(hour = 23)) -> ((next(hour) = hour) | (next(hour) = hour+1));
+asm GF (hour != next(hour)); //ensure time is progressing
+
+//moisture assumptions:
+asm G (moistureLevel + effectiveFlow - temperatureDecEffect < 0) -> (next(moistureLevel) = 0); //Avoid no-well separation.
+asm G (moistureLevel + effectiveFlow - temperatureDecEffect > 15) -> (next(moistureLevel) = 15); //Avoid no-well separation.
+asm G (((moistureLevel + effectiveFlow - temperatureDecEffect >= 0) & (moistureLevel + effectiveFlow - temperatureDecEffect <= 15)) ->
+			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect));
+
+
+/**********************/
+/***** GUARANTEES *****/
+/**********************/
+
+
+//AUTOMATIC MODE:
+gar G (((mode = 0) & isAboveRange) -> (irrigationFlow = 0)); //If we are above the range - do not irrigate. (there can be rain!)
+gar pRespondsToS(((mode = 0) & isBelowRange), ((mode = 0) -> !deviationAlert)); //If we are below the range, ensures that we will eventually be above minimum range.
+gar G deviationAlert = (isBelowRange | isAboveRange); //Alert in case of deviation.
+
+//MANUAL MODE:
+gar G (mode = 1) -> (irrigationFlow = manualModeUserFlow);
