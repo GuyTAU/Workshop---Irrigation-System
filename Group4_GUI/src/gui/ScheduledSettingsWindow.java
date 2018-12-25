@@ -74,7 +74,7 @@ public class ScheduledSettingsWindow extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public ScheduledSettingsWindow(int[] schedule, int x, int y) {
+	public ScheduledSettingsWindow(final int[] schedule, int x, int y) {
 		setModal(true);
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -85,7 +85,7 @@ public class ScheduledSettingsWindow extends JDialog {
 		setBounds(x, y, 586, 207);
 		getContentPane().setLayout(null);
 		
-		JComboBox<String> cbStartingHour = new JComboBox<String>();
+		final JComboBox<String> cbStartingHour = new JComboBox<String>();
 		for(int i = 0; i < 24; i++) {
 			cbStartingHour.addItem((i<10?"0":"")+i+":00");
 		}
@@ -96,7 +96,7 @@ public class ScheduledSettingsWindow extends JDialog {
 		lblStartingHour.setBounds(20, 16, 40, 14);
 		getContentPane().add(lblStartingHour);
 		
-		JComboBox<String> cbEndingHour = new JComboBox<String>();
+		final JComboBox<String> cbEndingHour = new JComboBox<String>();
 		cbEndingHour.setBounds(200, 12, 70, 23);
 		getContentPane().add(cbEndingHour);
 		
@@ -111,7 +111,7 @@ public class ScheduledSettingsWindow extends JDialog {
 		separator.setBounds(10, 42, 550, 13);
 		getContentPane().add(separator);
 		
-		JComboBox<Integer> cbFlowRate = new JComboBox<Integer>();
+		final JComboBox<Integer> cbFlowRate = new JComboBox<Integer>();
 		cbFlowRate.setBounds(340, 12, 57, 23);
 		getContentPane().add(cbFlowRate);
 		for(int i = 0; i < 5; i++) {
@@ -124,7 +124,7 @@ public class ScheduledSettingsWindow extends JDialog {
 		
 		JButton btnAdd = new JButton("Add");
 		
-		TextField[] t_hour = new TextField[24];
+		final TextField[] t_hour = new TextField[24];
 		JLabel[] l_hour = new JLabel[24];
 
 		for(int i = 0; i < 24; i++) {
