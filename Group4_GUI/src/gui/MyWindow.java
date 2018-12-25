@@ -459,6 +459,8 @@ public class MyWindow extends JFrame {
 		lblNewLabel.setBounds(187, 213, 256, 294);
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setIcon(new ImageIcon("img/tree.jpg"));
+		panel.add(lblNewLabel);
+
 		
 		
 		JLabel lblNewLabel_1 = new JLabel("New label");
