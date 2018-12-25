@@ -65,8 +65,8 @@ public class MyWindow extends JFrame {
 	private JLabel[] cloudLabels = new JLabel[3];
 	private TextField lowerBoundField;
 	private TextField upperBoundField;
-	private TextField textField_1; //Here user enters upper bound
-	private TextField textField_3; //Here user enters lower bound
+	private TextField upperBoundtextField; //Here user enters upper bound
+	private TextField lowerBoundTextField; //Here user enters lower bound
 	
 	//flags for set values
 	private boolean tempSet = false;
@@ -321,24 +321,24 @@ public class MyWindow extends JFrame {
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//take value of lower bound and upper bound
-				if (textField_1.getText().equals("")) {
+				if (upperBoundtextField.getText().equals("")) {
 					JOptionPane.showMessageDialog(contentPane, "Upper bound value was not inserted", "Input is missing", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				else {
-					gm.ENVupperBound = Integer.parseInt(textField_1.getText());
+					gm.ENVupperBound = Integer.parseInt(upperBoundtextField.getText());
 					if (gm.ENVupperBound > 15 || gm.ENVupperBound < 0) {
 						JOptionPane.showMessageDialog(contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					upperBoundSet = true;
 				}
-				if (textField_3.getText().equals("")) {
+				if (lowerBoundTextField.getText().equals("")) {
 					JOptionPane.showMessageDialog(contentPane, "Lower bound value was not inserted", "Input is missing", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				else {
-					gm.ENVlowerBound = Integer.parseInt(textField_3.getText());
+					gm.ENVlowerBound = Integer.parseInt(lowerBoundTextField.getText());
 					if (gm.ENVlowerBound > 15 || gm.ENVlowerBound < 0) {
 						JOptionPane.showMessageDialog(contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
 						return;
@@ -389,58 +389,52 @@ public class MyWindow extends JFrame {
 		/*
 		 * Time label.
 		 */
-		JLabel label = new JLabel("");
-		label.setBounds(10, 58, 204, 47);
-		panel.add(label);
-		label.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
-		label.setText("Time: " + String.valueOf(gm.ENVtime) + ":00");
-		timeLabel = label;
+		timeLabel = new JLabel("");
+		timeLabel.setBounds(10, 58, 204, 47);
+		panel.add(timeLabel);
+		timeLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
+		timeLabel.setText("Time: " + String.valueOf(gm.ENVtime) + ":00");
 		
 		
 		/*
 		 * Temperature label.
 		 */
-		JLabel lblTemperatue = new JLabel("Temperature:");
-		lblTemperatue.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
-		lblTemperatue.setBounds(10, 107, 204, 47);
-		panel.add(lblTemperatue);
-		temperatureLabel = lblTemperatue;
+		temperatureLabel = new JLabel("Temperature:");
+		temperatureLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
+		temperatureLabel.setBounds(10, 107, 204, 47);
+		panel.add(temperatureLabel);
 		
 		
 		/*
 		 * Mode label
 		 */
-		JLabel lblMode = new JLabel("Mode:");
-		lblMode.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
-		lblMode.setBounds(10, 165, 204, 47);
-		panel.add(lblMode);
-		modeLabel = lblMode;
+		modeLabel = new JLabel("Mode:");
+		modeLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
+		modeLabel.setBounds(10, 165, 204, 47);
+		panel.add(modeLabel);
 		
 		
 		
 		/*
 		 * Clouds labels
 		 */
-		JLabel lblNewLabel_2 = new JLabel("");
-		lblNewLabel_2.setBounds(224, 31, 250, 159);
-		lblNewLabel_2.setForeground(Color.WHITE);
-		lblNewLabel_2.setIcon(new ImageIcon("img/cloud 1.png"));
-		panel.add(lblNewLabel_2);
-		cloudLabels[0] = lblNewLabel_2;
+		cloudLabels[0] = new JLabel("");
+		cloudLabels[0].setBounds(224, 31, 250, 159);
+		cloudLabels[0].setForeground(Color.WHITE);
+		cloudLabels[0].setIcon(new ImageIcon("img/cloud 1.png"));
+		panel.add(cloudLabels[0]);
 		
-		JLabel lblNewLabel_3 = new JLabel("");
-		lblNewLabel_3.setBounds(224, 31, 250, 159);
-		lblNewLabel_3.setForeground(Color.WHITE);
-		lblNewLabel_3.setIcon(new ImageIcon("img/cloud 2.png"));
-		panel.add(lblNewLabel_3);
-		cloudLabels[1] = lblNewLabel_3;
+		cloudLabels[1] = new JLabel("");
+		cloudLabels[1].setBounds(224, 31, 250, 159);
+		cloudLabels[1].setForeground(Color.WHITE);
+		cloudLabels[1].setIcon(new ImageIcon("img/cloud 2.png"));
+		panel.add(cloudLabels[1]);
 		
-		JLabel lblNewLabel_4 = new JLabel("");
-		lblNewLabel_4.setBounds(224, 31, 250, 159);
-		lblNewLabel_4.setForeground(Color.WHITE);
-		lblNewLabel_4.setIcon(new ImageIcon("img/cloud 3.png"));
-		panel.add(lblNewLabel_4);
-		cloudLabels[2] = lblNewLabel_4;
+		cloudLabels[2] = new JLabel("");
+		cloudLabels[2].setBounds(224, 31, 250, 159);
+		cloudLabels[2].setForeground(Color.WHITE);
+		cloudLabels[2].setIcon(new ImageIcon("img/cloud 3.png"));
+		panel.add(cloudLabels[2]);
 		
 		
 
@@ -448,43 +442,39 @@ public class MyWindow extends JFrame {
 		/*
 		 * Text field for lower bound
 		 */
-		textField_1 = new TextField();
-		textField_1.setBounds(157, 256, 24, 19);
-		panel.add(textField_1);
-		lowerBoundField = textField_1;
+		upperBoundtextField = new TextField();
+		upperBoundtextField.setBounds(157, 256, 24, 19);
+		panel.add(upperBoundtextField);
 
 		
 		
 		/*
 		 * Text field for upper bound
 		 */
-		textField_3 = new TextField();
-		textField_3.setBounds(157, 295, 24, 19);
-		panel.add(textField_3);
-		upperBoundField = textField_3;
+		lowerBoundTextField = new TextField();
+		lowerBoundTextField.setBounds(157, 295, 24, 19);
+		panel.add(lowerBoundTextField);
 
 		
 		
 		/*
 		 * Alert label
 		 */
-		JLabel label_1 = new JLabel("");
-		label_1.setForeground(Color.WHITE);
-		label_1.setBounds(464, 461, 38, 46);
-		label_1.setForeground(Color.WHITE);
-		label_1.setIcon(new ImageIcon("img/alert.png"));
-		panel.add(label_1);
-		alertLabel = label_1;
+		alertLabel = new JLabel("");
+		alertLabel.setForeground(Color.WHITE);
+		alertLabel.setBounds(464, 461, 38, 46);
+		alertLabel.setForeground(Color.WHITE);
+		alertLabel.setIcon(new ImageIcon("img/alert.png"));
+		panel.add(alertLabel);
 		
 		
 		/*
 		 * Moisture level label
 		 */
-		JLabel lblMoistureLevel = new JLabel("Moisture Level:");
-		lblMoistureLevel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
-		lblMoistureLevel.setBounds(10, 11, 204, 47);
-		panel.add(lblMoistureLevel);
-		moistureLevelLabel = lblMoistureLevel;
+		moistureLevelLabel = new JLabel("Moisture Level:");
+		moistureLevelLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
+		moistureLevelLabel.setBounds(10, 11, 204, 47);
+		panel.add(moistureLevelLabel);
 		
 		
 		
@@ -493,7 +483,7 @@ public class MyWindow extends JFrame {
 		 * Simulation buttons
 		 */
 		Button button = new Button("Simulation 1");
-		button.setBounds(634, 234, 140, 74);
+		button.setBounds(634, 320, 140, 50);
 		contentPane.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -510,56 +500,60 @@ public class MyWindow extends JFrame {
 		});
 		
 		Button button_1 = new Button("Simulation 2");
-		button_1.setBounds(634, 343, 140, 74);
+		button_1.setBounds(634, 400, 140, 50);
 		contentPane.add(button_1);
 		
 		Button button_2 = new Button("Simulation 3");
-		button_2.setBounds(634, 455, 140, 74);
+		button_2.setBounds(634, 480, 140, 50);
 		contentPane.add(button_2);
+		
+		Button button_4 = new Button("Stop Simulation");
+		button_4.setBounds(634, 240, 140, 50);
+		contentPane.add(button_4);
 		
 		
 		
 		/*
 		 * Constant pictures and texts.
 		 */
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(187, 213, 256, 294);
-		lblNewLabel.setForeground(Color.WHITE);
-		lblNewLabel.setIcon(new ImageIcon("img/tree.jpg"));
-		panel.add(lblNewLabel);
+		JLabel treeIcon = new JLabel("");
+		treeIcon.setBounds(187, 213, 256, 294);
+		treeIcon.setForeground(Color.WHITE);
+		treeIcon.setIcon(new ImageIcon("img/tree.jpg"));
+		panel.add(treeIcon);
 
 		
 		
-		JLabel lblNewLabel_1 = new JLabel("New label");
-		lblNewLabel_1.setBackground(Color.WHITE);
-		lblNewLabel_1.setIcon(new ImageIcon("img/irrigation logo.jpg"));
-		lblNewLabel_1.setBounds(634, 11, 140, 178);
-		contentPane.add(lblNewLabel_1);
+		JLabel groupLogo = new JLabel("");
+		groupLogo.setBackground(Color.WHITE);
+		groupLogo.setIcon(new ImageIcon("img/irrigation logo.jpg"));
+		groupLogo.setBounds(634, 11, 140, 178);
+		contentPane.add(groupLogo);
 		
 		
-		JLabel lblNewLabel_5 = new JLabel("");
-		lblNewLabel_5.setBounds(453, 367, 81, 54);
-		lblNewLabel_5.setForeground(Color.WHITE);
-		lblNewLabel_5.setIcon(new ImageIcon("img/tap.jpg"));
-		panel.add(lblNewLabel_5);
+		JLabel tapIcon = new JLabel("");
+		tapIcon.setBounds(453, 367, 81, 54);
+		tapIcon.setForeground(Color.WHITE);
+		tapIcon.setIcon(new ImageIcon("img/tap.jpg"));
+		panel.add(tapIcon);
 		
 		
-		TextField textField = new TextField();
-		textField.setBackground(Color.RED);
-		textField.setEditable(false);
-		textField.setFont(new Font("Dialog", Font.PLAIN, 14));
-		textField.setText("Required Lower Bound");
-		textField.setBounds(10, 295, 143, 19);
-		panel.add(textField);
+		lowerBoundField = new TextField();
+		lowerBoundField.setBackground(Color.RED);
+		lowerBoundField.setEditable(false);
+		lowerBoundField.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lowerBoundField.setText("Required Lower Bound");
+		lowerBoundField.setBounds(10, 295, 143, 19);
+		panel.add(lowerBoundField);
 		
 		
-		TextField textField_2 = new TextField();
-		textField_2.setBackground(Color.CYAN);
-		textField_2.setText("Required Upper Bound");
-		textField_2.setFont(new Font("Dialog", Font.PLAIN, 14));
-		textField_2.setEditable(false);
-		textField_2.setBounds(10, 256, 143, 19);
-		panel.add(textField_2);
+		upperBoundField = new TextField();
+		upperBoundField.setBackground(Color.CYAN);
+		upperBoundField.setText("Required Upper Bound");
+		upperBoundField.setFont(new Font("Dialog", Font.PLAIN, 14));
+		upperBoundField.setEditable(false);
+		upperBoundField.setBounds(10, 256, 143, 19);
+		panel.add(upperBoundField);
 		
 		
 		JLabel lblOutputs = new JLabel("Outputs:");
@@ -567,11 +561,10 @@ public class MyWindow extends JFrame {
 		lblOutputs.setBounds(464, 292, 88, 47);
 		panel.add(lblOutputs);
 		
-		JLabel label_2 = new JLabel("");
-		label_2.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 25));
-		label_2.setBounds(543, 367, 38, 47);
-		panel.add(label_2);
-		irrigationFlowLabel = label_2;
+		irrigationFlowLabel = new JLabel("");
+		irrigationFlowLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 25));
+		irrigationFlowLabel.setBounds(543, 367, 38, 47);
+		panel.add(irrigationFlowLabel);
 		
 		
 	}
