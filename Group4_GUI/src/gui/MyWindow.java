@@ -67,6 +67,15 @@ public class MyWindow extends JFrame {
 	private TextField upperBoundField;
 	private TextField textField_1; //Here user enters upper bound
 	private TextField textField_3; //Here user enters lower bound
+	
+	//flags for set values
+	private boolean tempSet = false;
+	private boolean modeSet = false;
+	private boolean irrigationFlowSet = false;
+	private boolean rainSet = false;
+	boolean lowerBoundSet = false;
+	boolean upperBoundSet = false;
+
 
 	
 	
@@ -119,6 +128,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmCold.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVtemperature = 0;
+				tempSet = true;
 			}
 		});
 		buttonGroup.add(chckbxmntmCold);
@@ -128,6 +138,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmMedium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVtemperature = 1;
+				tempSet = true;
 			}
 		});
 		buttonGroup.add(chckbxmntmMedium);
@@ -137,6 +148,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmHot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVtemperature = 2;
+				tempSet = true;
 			}
 		});
 		buttonGroup.add(chckbxmntmHot);
@@ -155,6 +167,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmNone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVrainPower = 0;
+				rainSet = true;
 			}
 		});
 		buttonGroup_1.add(chckbxmntmNone);
@@ -164,6 +177,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmLight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVrainPower = 1;
+				rainSet = true;
 			}
 		});
 		buttonGroup_1.add(chckbxmntmLight);
@@ -173,6 +187,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmModerate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVrainPower = 2;
+				rainSet = true;
 			}
 		});
 		buttonGroup_1.add(chckbxmntmModerate);
@@ -182,6 +197,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmHeavy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVrainPower = 3;
+				rainSet = true;
 			}
 		});
 		buttonGroup_1.add(chckbxmntmHeavy);
@@ -198,6 +214,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmAutomatic.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmode = 0;
+				modeSet = true;
 			}
 		});
 		buttonGroup_2.add(chckbxmntmAutomatic);
@@ -207,6 +224,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmManual.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmode = 1;
+				modeSet = true;
 			}
 		});
 		buttonGroup_2.add(chckbxmntmManual);
@@ -216,6 +234,7 @@ public class MyWindow extends JFrame {
 		chckbxmntmScheduled.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmode = 2;
+				modeSet = true;
 				Frame frame = Frame.getFrames()[0];
 				ScheduledSettingsWindow scheduledWindow = new ScheduledSettingsWindow(gm.ENVschedule,
 																						frame.getLocation().x + frame.getWidth()/7,
@@ -238,6 +257,7 @@ public class MyWindow extends JFrame {
 		checkBoxMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 0;
+				irrigationFlowSet = true;
 			}
 		});
 		buttonGroup_3.add(checkBoxMenuItem);
@@ -247,6 +267,7 @@ public class MyWindow extends JFrame {
 		checkBoxMenuItem_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 1;
+				irrigationFlowSet = true;
 			}
 		});
 		buttonGroup_3.add(checkBoxMenuItem_1);
@@ -256,9 +277,7 @@ public class MyWindow extends JFrame {
 		checkBoxMenuItem_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 2;
-				System.out.println();
-				System.out.println("manual flow" + gm.ENVmanualModeUserFlow);
-				System.out.println();
+				irrigationFlowSet = true;
 			}
 		});
 		buttonGroup_3.add(checkBoxMenuItem_2);
@@ -268,6 +287,7 @@ public class MyWindow extends JFrame {
 		checkBoxMenuItem_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 3;
+				irrigationFlowSet = true;
 			}
 		});
 		buttonGroup_3.add(checkBoxMenuItem_3);
@@ -277,6 +297,7 @@ public class MyWindow extends JFrame {
 		checkBoxMenuItem_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 4;
+				irrigationFlowSet = true;
 			}
 		});
 		buttonGroup_3.add(checkBoxMenuItem_4);
@@ -286,6 +307,7 @@ public class MyWindow extends JFrame {
 		checkBoxMenuItem_5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 5;
+				irrigationFlowSet = true;
 			}
 		});
 		buttonGroup_3.add(checkBoxMenuItem_5);
@@ -299,23 +321,46 @@ public class MyWindow extends JFrame {
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//take value of lower bound and upper bound
-				boolean lowerSet = false;
-				boolean upperSet = true;
 				if (textField_1.getText().equals("")) {
-					JOptionPane.showMessageDialog(contentPane, "Input is missing", "Upper bound value was not inserted", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(contentPane, "Upper bound value was not inserted", "Input is missing", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				else {
 					gm.ENVupperBound = Integer.parseInt(textField_1.getText());
-					upperSet = true;
+					if (gm.ENVupperBound > 15 || gm.ENVupperBound < 0) {
+						JOptionPane.showMessageDialog(contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					upperBoundSet = true;
 				}
 				if (textField_3.getText().equals("")) {
-					JOptionPane.showMessageDialog(contentPane, "Input is missing", "Lower bound value was not inserted", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(contentPane, "Lower bound value was not inserted", "Input is missing", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				else {
 					gm.ENVlowerBound = Integer.parseInt(textField_3.getText());
-					lowerSet = true;
+					if (gm.ENVlowerBound > 15 || gm.ENVlowerBound < 0) {
+						JOptionPane.showMessageDialog(contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					lowerBoundSet = true;
+				}
+				//Check all value were set by user
+				if (!tempSet) {
+					JOptionPane.showMessageDialog(contentPane, "You must set Temperature in order to proceed", "Input is missing", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if (!rainSet) {
+					JOptionPane.showMessageDialog(contentPane, "You must set Rain Power in order to proceed", "Input is missing", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if (!modeSet) {
+					JOptionPane.showMessageDialog(contentPane, "You must set Mode in order to proceed", "Input is missing", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if (!irrigationFlowSet) {
+					JOptionPane.showMessageDialog(contentPane, "You must set Manual Irrigation Flow in order to proceed", "Input is missing", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				//Push value to controller and get outputs.
 				try {
