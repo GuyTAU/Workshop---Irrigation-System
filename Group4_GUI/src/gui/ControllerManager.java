@@ -81,6 +81,14 @@ public class ControllerManager {
 		
 		//Need to get a random value for moisture.
 		ENVmoistureLevel = generateENVmoistureLevel();
+		//increment state number by one for every state update
+		stateNum++;
+		if (stateNum%6 == 0) {
+			ENVtime++;
+		}
+		if (ENVtime == 24) {
+			ENVtime = 0;
+		}
 		//Set controller values
 		ctrlExec.setInputValue("rainPower", "" + ENVrainPower);
 		ctrlExec.setInputValue("hour", "" + ENVtime);

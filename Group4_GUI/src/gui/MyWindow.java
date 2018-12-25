@@ -116,7 +116,7 @@ public class MyWindow extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
-		
+		final MyWindow selfRef = this;
 		
 		/*
 		 * Temperature buttons
@@ -495,6 +495,19 @@ public class MyWindow extends JFrame {
 		Button button = new Button("Simulation 1");
 		button.setBounds(634, 234, 140, 74);
 		contentPane.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					simulation1(selfRef);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ControllerExecutorException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		Button button_1 = new Button("Simulation 2");
 		button_1.setBounds(634, 343, 140, 74);
@@ -607,6 +620,27 @@ public class MyWindow extends JFrame {
 			this.cloudLabels[0].setVisible(false);
 			this.cloudLabels[1].setVisible(false);
 			this.cloudLabels[2].setVisible(true);
+		}
+	}
+	
+	
+	
+	
+	public static void simulation1(MyWindow window) throws InterruptedException, ControllerExecutorException {
+		int i=0;
+		while (i<10) {
+			System.out.println("here");
+			window.gm.ENVrainPower = 0;
+			window.gm.ENVtemperature = 2;
+			window.gm.ENVmode = 0;
+			window.gm.ENVmanualModeUserFlow = 0; //Doesn't matter
+			window.gm.ENVlowerBound = 10;
+			window.gm.ENVupperBound = 12;
+			window.gm.updateState();
+			window.updatePicture();
+			window.revalidate();
+			Thread.sleep(1000);
+			i++;
 		}
 	}
 }
