@@ -62,9 +62,9 @@ public class ControllerManager {
 		ctrlExec.setInputValue("temperature", "" + ENVtemperature);
 		ctrlExec.setInputValue("mode", "" + ENVmode);
 		ctrlExec.setInputValue("manualModeUserFlow", "" + ENVmanualModeUserFlow);
+		ctrlExec.setInputValue("lowerBound", "" + ENVlowerBound);
+		ctrlExec.setInputValue("upperBound", "" + ENVupperBound);
 		//ctrlExec.setInputValue("moistureLevel", "" + ENVmoistureLevel);
-		//ctrlExec.setInputValue("lowerBound", "" + ENVlowerBound);
-		//ctrlExec.setInputValue("upperBound", "" + ENVupperBound);
 		
 		
 		//Try to update the state of the controller, provided the above user inputs

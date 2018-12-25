@@ -62,6 +62,9 @@ public class MyWindow extends JFrame {
 	private JLabel[] cloudLabels = new JLabel[3];
 	private TextField lowerBoundField;
 	private TextField upperBoundField;
+	private TextField textField_1; //Here user enters upper bound
+	private TextField textField_3; //Here user enters lower bound
+
 	
 	
 	
@@ -292,13 +295,26 @@ public class MyWindow extends JFrame {
 		Button button_3 = new Button("Update state");
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//take value of lower bound and upper bound
+				if (textField_1.getText().equals("")) {
+					gm.ENVupperBound = 0;
+				}
+				else {
+					gm.ENVupperBound = Integer.parseInt(textField_1.getText());
+				}
+				if (textField_3.getText().equals("")) {
+					gm.ENVlowerBound = 0;
+				}
+				else {
+					gm.ENVlowerBound = Integer.parseInt(textField_3.getText());
+				}
+				//Push value to controller and get outputs.
 				try {
 					gm.updateState();
 				} catch (ControllerExecutorException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				System.out.println("pushed to controller");
 				updatePicture();
 			}
 		});
@@ -378,22 +394,17 @@ public class MyWindow extends JFrame {
 		/*
 		 * Text field for lower bound
 		 */
-		TextField textField_1 = new TextField();
+		textField_1 = new TextField();
 		textField_1.setBounds(157, 256, 24, 19);
 		panel.add(textField_1);
 		lowerBoundField = textField_1;
-		if (textField_1.getText().equals("")) {
-			this.gm.ENVlowerBound = 0;
-		}
-		else {
-			this.gm.ENVlowerBound = Integer.parseInt(textField_1.getText());
-		}
+
 		
 		
 		/*
 		 * Text field for upper bound
 		 */
-		TextField textField_3 = new TextField();
+		textField_3 = new TextField();
 		textField_3.setBounds(157, 295, 24, 19);
 		panel.add(textField_3);
 		upperBoundField = textField_3;
@@ -446,7 +457,6 @@ public class MyWindow extends JFrame {
 		 */
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setBounds(187, 213, 256, 294);
-		panel.add(lblNewLabel);
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setIcon(new ImageIcon("img/tree.jpg"));
 		
