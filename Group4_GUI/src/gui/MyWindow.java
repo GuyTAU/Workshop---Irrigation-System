@@ -297,13 +297,13 @@ public class MyWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				//take value of lower bound and upper bound
 				if (textField_1.getText().equals("")) {
-					gm.ENVupperBound = 0;
+					gm.ENVupperBound = 4; //default value
 				}
 				else {
 					gm.ENVupperBound = Integer.parseInt(textField_1.getText());
 				}
 				if (textField_3.getText().equals("")) {
-					gm.ENVlowerBound = 0;
+					gm.ENVlowerBound = 7; //default value
 				}
 				else {
 					gm.ENVlowerBound = Integer.parseInt(textField_3.getText());

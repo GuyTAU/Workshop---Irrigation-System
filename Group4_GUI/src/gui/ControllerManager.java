@@ -38,6 +38,12 @@ public class ControllerManager {
 	/*** Controller ***/
 	private int stateNum = 0; //our counter for counting states.
 	ControllerExecutor ctrlExec;
+	
+	
+	/*** Used for generating moisture value possible range ***/
+	int temperatureDecEffect;
+	int effectiveFlow; // 0-none, 1-light, 2-moderate, 3-heavy
+
 
 	
 	public ControllerManager() {
@@ -48,6 +54,25 @@ public class ControllerManager {
 		curValues = new HashMap<String, String>();
 	}
 	
+	
+	/**
+	 * Generates a random value for ENVmoistureLevel, based on previous moisture level, prev temprature, prev rain power
+	 * and prev irrigation flow.
+	 */
+	
+	public int generateENVmoistureLevel() {
+		//int randomValue = random.nextInt(8);
+		if (ENVmoistureLevel + effectiveFlow - temperatureDecEffect < 0) {
+			return 0;
+		}
+		else if (ENVmoistureLevel + effectiveFlow - temperatureDecEffect > 15) {
+			return 15;
+		}
+		else {
+			return ENVmoistureLevel + effectiveFlow - temperatureDecEffect;
+		}
+	}
+	
 	/**
 	 * @throws ControllerExecutorException 
 	 * 
@@ -55,7 +80,7 @@ public class ControllerManager {
 	public void updateState() throws ControllerExecutorException {
 		
 		//Need to get a random value for moisture.
-		ENVmoistureLevel = 3;
+		ENVmoistureLevel = generateENVmoistureLevel();
 		//Set controller values
 		ctrlExec.setInputValue("rainPower", "" + ENVrainPower);
 		ctrlExec.setInputValue("hour", "" + ENVtime);
@@ -64,7 +89,7 @@ public class ControllerManager {
 		ctrlExec.setInputValue("manualModeUserFlow", "" + ENVmanualModeUserFlow);
 		ctrlExec.setInputValue("lowerBound", "" + ENVlowerBound);
 		ctrlExec.setInputValue("upperBound", "" + ENVupperBound);
-		//ctrlExec.setInputValue("moistureLevel", "" + ENVmoistureLevel);
+		ctrlExec.setInputValue("moistureLevel", "" + ENVmoistureLevel);
 		
 		
 		//Try to update the state of the controller, provided the above user inputs
@@ -97,6 +122,9 @@ public class ControllerManager {
 		//Next output values
 		SYSirrigationFlow = Integer.parseInt(curValues.get("irrigationFlow"));
 		SYSdeviationAlert = Boolean.parseBoolean(curValues.get("deviationAlert"));
+		
+		temperatureDecEffect = ENVtemperature+1; //Next moisture will be based on this value
+		effectiveFlow = ENVrainPower + SYSirrigationFlow; //and on this value
 		
 	}
 		
