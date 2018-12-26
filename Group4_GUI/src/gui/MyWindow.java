@@ -49,6 +49,8 @@ import javax.swing.Timer;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 
 public class MyWindow extends JFrame {
 
@@ -71,6 +73,7 @@ public class MyWindow extends JFrame {
 	private TextField upperBoundField;
 	private TextField upperBoundtextField; //Here user enters upper bound
 	private TextField lowerBoundTextField; //Here user enters lower bound
+	public Button but_sim1, but_sim2, but_sim3, but_stopSim, but_updateState; 
 	
 	//flags for set values
 	private boolean tempSet = false;
@@ -321,8 +324,8 @@ public class MyWindow extends JFrame {
 		/*
 		 * Update state button
 		 */
-		Button button_3 = new Button("Update state");
-		button_3.addActionListener(new ActionListener() {
+		but_updateState = new Button("Update state");
+		but_updateState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//take value of lower bound and upper bound
 				int lowerBound, upperBound;
@@ -377,17 +380,14 @@ public class MyWindow extends JFrame {
 				updatePicture();
 			}
 		});
-		menuBar.add(button_3);
+		menuBar.add(but_updateState);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.WHITE);
 		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel.setBounds(10, 11, 591, 518);
-		contentPane.add(panel);
 		panel.setLayout(null);
 		
 		
@@ -487,10 +487,8 @@ public class MyWindow extends JFrame {
 		/*
 		 * Simulation buttons
 		 */
-		Button button = new Button("Simulation 1");
-		button.setBounds(634, 320, 140, 50);
-		contentPane.add(button);
-		button.addActionListener(new ActionListener() {
+		but_sim1 = new Button("Simulation 1");
+		but_sim1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					simulation1(selfRef);
@@ -504,24 +502,20 @@ public class MyWindow extends JFrame {
 			}
 		});
 		
-		Button button_1 = new Button("Simulation 2");
-		button_1.setBounds(634, 400, 140, 50);
-		contentPane.add(button_1);
+		but_sim2 = new Button("Simulation 2");
 		
-		Button button_2 = new Button("Simulation 3");
-		button_2.setBounds(634, 480, 140, 50);
-		contentPane.add(button_2);
+		but_sim3 = new Button("Simulation 3");
 		
-		Button button_4 = new Button("Stop Simulation");
-		button_4.addActionListener(new ActionListener() {
+		but_stopSim = new Button("Stop Simulation");
+		but_stopSim.setEnabled(false);
+		but_stopSim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(timer != null) {
 				timer.stop();
+				reenableButtons(selfRef);
 				}
 			}
 		});
-		button_4.setBounds(634, 240, 140, 50);
-		contentPane.add(button_4);
 		
 		
 		
@@ -539,8 +533,6 @@ public class MyWindow extends JFrame {
 		JLabel groupLogo = new JLabel("");
 		groupLogo.setBackground(Color.WHITE);
 		groupLogo.setIcon(new ImageIcon("img/irrigation logo.jpg"));
-		groupLogo.setBounds(634, 11, 140, 178);
-		contentPane.add(groupLogo);
 		
 		
 		JLabel tapIcon = new JLabel("");
@@ -577,6 +569,38 @@ public class MyWindow extends JFrame {
 		irrigationFlowLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 25));
 		irrigationFlowLabel.setBounds(543, 367, 38, 47);
 		panel.add(irrigationFlowLabel);
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(5)
+					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 591, GroupLayout.PREFERRED_SIZE)
+					.addGap(33)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(groupLogo, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
+						.addComponent(but_stopSim, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
+						.addComponent(but_sim1, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
+						.addComponent(but_sim2, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
+						.addComponent(but_sim3, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(6)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 518, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(groupLogo, GroupLayout.PREFERRED_SIZE, 178, GroupLayout.PREFERRED_SIZE)
+							.addGap(51)
+							.addComponent(but_stopSim, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+							.addGap(30)
+							.addComponent(but_sim1, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+							.addGap(30)
+							.addComponent(but_sim2, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+							.addGap(30)
+							.addComponent(but_sim3, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))))
+		);
+		contentPane.setLayout(gl_contentPane);
 		
 		
 	}
@@ -634,7 +658,40 @@ public class MyWindow extends JFrame {
 	}
 	
 	
+	/*
+	 * Disables all buttons in MyWindow except for the "Stop simulation" button.
+	 */
+	public static void disableButtons(MyWindow window) {
+		JMenuBar menu = window.getJMenuBar();
+		JMenu item;
+		for(int i=0; i < menu.getMenuCount(); i++) {
+			item = menu.getMenu(i);
+			if(item != null) item.setEnabled(false);
+		}
+		window.but_sim1.setEnabled(false);
+		window.but_sim2.setEnabled(false);
+		window.but_sim3.setEnabled(false);
+		window.but_updateState.setEnabled(false);
+		window.but_stopSim.setEnabled(true);
+	}
 	
+	
+	/*
+	 * Enables all buttons in MyWindow except for the "Stop simulation" button.
+	 */
+	public static void reenableButtons(MyWindow window) {
+		JMenuBar menu = window.getJMenuBar();
+		JMenu item;
+		for(int i=0; i < menu.getMenuCount(); i++) {
+			item = menu.getMenu(i);
+			if(item != null) item.setEnabled(true);
+		}
+		window.but_sim1.setEnabled(true);
+		window.but_sim2.setEnabled(true);
+		window.but_sim3.setEnabled(true);
+		window.but_updateState.setEnabled(true);
+		window.but_stopSim.setEnabled(false);
+	}	
 
 	public static void simulation1(MyWindow window) throws InterruptedException, ControllerExecutorException {
 		
@@ -642,6 +699,7 @@ public class MyWindow extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				disableButtons(window);
 				window.gm.ENVrainPower = 0;
 				window.gm.ENVtemperature = 2;
 				window.gm.ENVmode = 0;
