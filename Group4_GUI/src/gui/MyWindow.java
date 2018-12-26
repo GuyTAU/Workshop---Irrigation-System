@@ -80,8 +80,8 @@ public class MyWindow extends JFrame {
 	boolean lowerBoundSet = false;
 	boolean upperBoundSet = false;
 
-	static Timer timer;
-	
+	private static Timer timer;
+	private int minutes;
 	
 	
 	
@@ -515,7 +515,9 @@ public class MyWindow extends JFrame {
 		Button button_4 = new Button("Stop Simulation");
 		button_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(timer != null) {
 				timer.stop();
+				}
 			}
 		});
 		button_4.setBounds(634, 240, 140, 50);
@@ -586,7 +588,9 @@ public class MyWindow extends JFrame {
 		this.alertLabel.setVisible(gm.SYSdeviationAlert);
 		this.upperBoundtextField.setEditable(false); //once decided = cannot be changed
 		this.lowerBoundTextField.setEditable(false); //once decided = cannot be changed
-		this.timeLabel.setText(("Time: " + String.valueOf(gm.ENVtime) + ":00"));
+		minutes++;
+		if(minutes == 6) minutes = 0;
+		this.timeLabel.setText(("Time: " + String.valueOf(gm.ENVtime) + ":"+minutes+"0"));
 		this.moistureLevelLabel.setText(("Moisture Level: " + String.valueOf(gm.ENVmoistureLevel)));
 		this.irrigationFlowLabel.setText((String.valueOf(gm.SYSirrigationFlow)));
 		//Update Mode label
