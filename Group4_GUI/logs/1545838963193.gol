@@ -1,0 +1,4 @@
+<mode:0, manualModeUserFlow:5, rainPower:1, hour:14, moistureLevel:9, temperature:2, lowerBound:10, upperBound:12, irrigationFlow:2, deviationAlert:true, SYS_CONSTRAINT.11.pRespondsToS.state:S0, PRIMED_JUSTICE_29:false, Zn:0>
+<mode:0, manualModeUserFlow:5, rainPower:1, hour:14, moistureLevel:9, temperature:2, lowerBound:10, upperBound:12, irrigationFlow:1, deviationAlert:true, SYS_CONSTRAINT.11.pRespondsToS.state:S1, PRIMED_JUSTICE_29:false, Zn:0>
+<mode:0, manualModeUserFlow:5, rainPower:1, hour:14, moistureLevel:8, temperature:2, lowerBound:10, upperBound:12, irrigationFlow:5, deviationAlert:true, SYS_CONSTRAINT.11.pRespondsToS.state:S1, PRIMED_JUSTICE_29:false, Zn:0>
+<mode:0, manualModeUserFlow:5, rainPower:1, hour:14, moistureLevel:11, temperature:2, lowerBound:10, upperBound:12, irrigationFlow:1, deviationAlert:false, SYS_CONSTRAINT.11.pRespondsToS.state:S1, PRIMED_JUSTICE_29:false, Zn:0>

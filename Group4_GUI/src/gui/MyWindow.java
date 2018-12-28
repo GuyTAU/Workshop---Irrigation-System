@@ -243,7 +243,7 @@ public class MyWindow extends JFrame {
 				gm.ENVmode = 2;
 				modeSet = true;
 				Frame frame = Frame.getFrames()[0];
-				ScheduledSettingsWindow scheduledWindow = new ScheduledSettingsWindow(gm.ENVschedule,
+				ScheduledSettingsWindow scheduledWindow = new ScheduledSettingsWindow(gm,
 																						frame.getLocation().x + frame.getWidth()/7,
 																						frame.getLocation().y + frame.getHeight()/3);
 				scheduledWindow.setVisible(true);
@@ -319,7 +319,7 @@ public class MyWindow extends JFrame {
 		});
 		buttonGroup_3.add(checkBoxMenuItem_5);
 		mnManualIrrigationFlow.add(checkBoxMenuItem_5);
-		
+				
 		
 		/*
 		 * Update state button

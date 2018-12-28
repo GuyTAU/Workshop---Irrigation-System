@@ -28,7 +28,7 @@ public class ControllerManager {
 	int ENVmoistureLevel;
 	int ENVlowerBound;
 	int ENVupperBound;
-	int[] ENVschedule = new int[24];
+	boolean[] ENVschedule = new boolean[24];
 
 	/*** SYS vars ***/
 	int SYSirrigationFlow;
