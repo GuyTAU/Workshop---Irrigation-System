@@ -693,7 +693,7 @@ public class MyWindow extends JFrame {
 		window.but_stopSim.setEnabled(false);
 	}	
 
-	public static void simulation1(MyWindow window) throws InterruptedException, ControllerExecutorException {
+	public static void simulation1(final MyWindow window) throws InterruptedException, ControllerExecutorException {
 		
 		ActionListener simListener = new ActionListener() {
 			
