@@ -28,7 +28,7 @@ public class ScheduledSettingsWindow extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public ScheduledSettingsWindow(ControllerManager gm, int x, int y) {
+	public ScheduledSettingsWindow(final ControllerManager gm, int x, int y) {
 		setModal(true);
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

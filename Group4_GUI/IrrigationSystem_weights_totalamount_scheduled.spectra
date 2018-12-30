@@ -48,7 +48,7 @@ env Int (0..15) lowerBound; //NOTE: The eclipse shows only some of the starting 
 env Int (0..15) upperBound; //NOTE: The eclipse shows only some of the starting states, since its number is quite big.
 
 //for scheduled mode:
-env boolean [24] schedule_table;
+//env boolean [24] schedule_table;
 
 
 /***********************/
@@ -64,8 +64,8 @@ asm (lowerBound < upperBound);
 asm (upperBound - lowerBound) > minBoundDiff; //NEED TO DECIDE ON A DIFF
 
 //Temperature doesn't change drastically
-asm G (temperature = 0) -> (!(next(temperature) = 2));
-asm G (temperature = 2) -> (!(next(temperature) = 0));
+//asm G (temperature = 0) -> (!(next(temperature) = 2));
+//asm G (temperature = 2) -> (!(next(temperature) = 0));
 
 
 //hour assumptions
@@ -75,36 +75,28 @@ asm GF (hour != next(hour)); //ensure time is progressing
 
 //moisture assumptions:
 
-//
-//asm G (moistureLevel + effectiveFlow - temperatureDecEffect < 0) -> (next(moistureLevel) = 0); //Avoid no-well separation.
-//asm G (moistureLevel + effectiveFlow - temperatureDecEffect > 15) -> (next(moistureLevel) = 15); //Avoid no-well separation.
-//asm G ((moistureLevel + effectiveFlow - temperatureDecEffect >= 0) & (moistureLevel + effectiveFlow - temperatureDecEffect <= 15)) ->
-//			((next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect) | 
-//			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect - 1) |
-//			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect + 1));
 
 
-
-//EFFECTIVE FLOW IS 0 - NO EVAPORATION
-asm G ((effectiveFlow = 0) & (moistureLevel - temperatureDecEffect < 0)) ->
+//EFFECTIVE FLOW IS 0 OR TEMPERATURE IS NOT HOT - NO EVAPORATION
+asm G (((temperature != 2) | (effectiveFlow = 0)) & (moistureLevel + effectiveFlow - temperatureDecEffect < 0)) ->
 			(next(moistureLevel) = 0); //Avoid no-well separation
 
-asm G ((effectiveFlow = 0) & (moistureLevel - temperatureDecEffect > 15)) ->
+asm G (((temperature != 2) | (effectiveFlow = 0)) & (moistureLevel + effectiveFlow - temperatureDecEffect > 15)) ->
 			(next(moistureLevel) = 15); //Avoid no-well separation
 
-asm G ((effectiveFlow = 0) & (moistureLevel - temperatureDecEffect >= 0) & (moistureLevel - temperatureDecEffect <= 15)) ->
-			((next(moistureLevel) = moistureLevel - temperatureDecEffect) |
-			(next(moistureLevel) = moistureLevel - temperatureDecEffect - 1) | //-1 for randomness
-			(next(moistureLevel) = moistureLevel - temperatureDecEffect + 1));	//+1 for randomness
+asm G (((temperature != 2) | (effectiveFlow = 0)) & (moistureLevel + effectiveFlow - temperatureDecEffect >= 0) & (moistureLevel + effectiveFlow - temperatureDecEffect <= 15)) ->
+			((next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect) |
+			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect - 1) | //-1 for randomness
+			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect + 1));	//+1 for randomness
  
  
-//EFFECTIVE FLOW IS GREATER THAN 0 - THERE IS EVAPORATION
-asm G ((effectiveFlow != 0) & moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect < 0) -> (next(moistureLevel) = 0); //Avoid no-well separation.
-asm G ((effectiveFlow != 0) & moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect > 15) -> (next(moistureLevel) = 15); //Avoid no-well separation.
-asm G ((effectiveFlow != 0) & (moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect >= 0) & (moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect <= 15)) ->
-			((next(moistureLevel) = moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect) |
-			(next(moistureLevel) = moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect -1 ) | //-1 for randomness
-			(next(moistureLevel) = moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect + 1)); //+1 for randomness
+//EFFECTIVE FLOW IS GREATER THAN 0 AND TEMPERATUER IS HOT - THERE IS EVAPORATION
+asm G (((temperature = 2) & (effectiveFlow != 0)) & moistureLevel + (effectiveFlow - 1) - temperatureDecEffect < 0) -> (next(moistureLevel) = 0); //Avoid no-well separation.
+asm G (((temperature = 2) & (effectiveFlow != 0)) & moistureLevel + (effectiveFlow - 1) - temperatureDecEffect > 15) -> (next(moistureLevel) = 15); //Avoid no-well separation.
+asm G (((temperature = 2) & (effectiveFlow != 0)) & (moistureLevel + (effectiveFlow - 1) - temperatureDecEffect >= 0) & (moistureLevel + (effectiveFlow  - 1) - temperatureDecEffect <= 15)) ->
+			((next(moistureLevel) = moistureLevel + (effectiveFlow  - 1) - temperatureDecEffect) |
+			(next(moistureLevel) = moistureLevel + (effectiveFlow - 1) - temperatureDecEffect -1 ) | //-1 for randomness
+			(next(moistureLevel) = moistureLevel + (effectiveFlow  - 1) - temperatureDecEffect + 1)); //+1 for randomness
 
 
 /**********************/
@@ -123,54 +115,54 @@ gar G (mode = 1) -> (irrigationFlow = manualModeUserFlow);
 //gar G (mode = 2) -> (irrigationFlow = schedule_table[hour]); //throwing error on: "schedule_table[hour]"
 //USING INSTEAD OF ^, ALL OF THESE: 
 
-gar G (mode = 2 & hour = 0 & schedule_table[0]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 0 & !schedule_table[0]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 1 & schedule_table[1]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 1 & !schedule_table[1]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 2 & schedule_table[2]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 2 & !schedule_table[2]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 3 & schedule_table[3]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 3 & !schedule_table[3]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 4 & schedule_table[4]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 4 & !schedule_table[4]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 5 & schedule_table[5]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 5 & !schedule_table[5]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 6 & schedule_table[6]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 6 & !schedule_table[6]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 7 & schedule_table[7]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 7 & !schedule_table[7]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 8 & schedule_table[8]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 8 & !schedule_table[8]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 9 & schedule_table[9]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 9 & !schedule_table[9]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 10 & schedule_table[10]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 10 & !schedule_table[10]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 11 & schedule_table[11]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 11 & !schedule_table[11]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 12 & schedule_table[12]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 12 & !schedule_table[12]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 13 & schedule_table[13]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 13 & !schedule_table[13]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 14 & schedule_table[14]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 14 & !schedule_table[14]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 15 & schedule_table[15]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 15 & !schedule_table[15]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 16 & schedule_table[16]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 16 & !schedule_table[16]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 17 & schedule_table[17]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 17 & !schedule_table[17]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 18 & schedule_table[18]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 18 & !schedule_table[18]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 19 & schedule_table[19]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 19 & !schedule_table[19]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 20 & schedule_table[20]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 20 & !schedule_table[20]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 21 & schedule_table[21]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 21 & !schedule_table[21]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 22 & schedule_table[22]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 22 & !schedule_table[22]) -> (irrigationFlow = 0);
-gar G (mode = 2 & hour = 23 & schedule_table[23]) -> (irrigationFlow = manualModeUserFlow);
-gar G (mode = 2 & hour = 23 & !schedule_table[23]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 0 & schedule_table[0]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 0 & !schedule_table[0]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 1 & schedule_table[1]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 1 & !schedule_table[1]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 2 & schedule_table[2]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 2 & !schedule_table[2]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 3 & schedule_table[3]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 3 & !schedule_table[3]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 4 & schedule_table[4]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 4 & !schedule_table[4]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 5 & schedule_table[5]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 5 & !schedule_table[5]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 6 & schedule_table[6]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 6 & !schedule_table[6]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 7 & schedule_table[7]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 7 & !schedule_table[7]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 8 & schedule_table[8]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 8 & !schedule_table[8]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 9 & schedule_table[9]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 9 & !schedule_table[9]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 10 & schedule_table[10]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 10 & !schedule_table[10]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 11 & schedule_table[11]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 11 & !schedule_table[11]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 12 & schedule_table[12]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 12 & !schedule_table[12]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 13 & schedule_table[13]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 13 & !schedule_table[13]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 14 & schedule_table[14]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 14 & !schedule_table[14]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 15 & schedule_table[15]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 15 & !schedule_table[15]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 16 & schedule_table[16]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 16 & !schedule_table[16]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 17 & schedule_table[17]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 17 & !schedule_table[17]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 18 & schedule_table[18]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 18 & !schedule_table[18]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 19 & schedule_table[19]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 19 & !schedule_table[19]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 20 & schedule_table[20]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 20 & !schedule_table[20]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 21 & schedule_table[21]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 21 & !schedule_table[21]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 22 & schedule_table[22]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 22 & !schedule_table[22]) -> (irrigationFlow = 0);
+//gar G (mode = 2 & hour = 23 & schedule_table[23]) -> (irrigationFlow = manualModeUserFlow);
+//gar G (mode = 2 & hour = 23 & !schedule_table[23]) -> (irrigationFlow = 0);
  
  
 //USING WEIGHTS TO SAVE WATER:

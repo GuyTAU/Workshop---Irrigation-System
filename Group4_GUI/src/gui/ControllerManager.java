@@ -65,35 +65,35 @@ public class ControllerManager {
 		Random rand = new Random();
 		int randomValue = rand.nextInt(3) + -1;
 		System.out.println(randomValue);
-		if (effectiveFlow == 0) {
-			if (ENVmoistureLevel - temperatureDecEffect < 0) {
+		if (ENVtemperature != 2 | effectiveFlow == 0) {
+			if (ENVmoistureLevel + effectiveFlow - temperatureDecEffect < 0) {
 				return 0;
 			}
-			else if (ENVmoistureLevel - temperatureDecEffect > 15) {
+			else if (ENVmoistureLevel + effectiveFlow - temperatureDecEffect > 15) {
 				return 15;
 			}
 			else {
-				if (randomValue + ENVmoistureLevel - temperatureDecEffect <0) {
+				if (randomValue + ENVmoistureLevel + effectiveFlow - temperatureDecEffect <0) {
 					return 0;
 				}
 				else {
-					return Math.min(randomValue + ENVmoistureLevel - temperatureDecEffect, 15);
+					return Math.min(randomValue + ENVmoistureLevel + effectiveFlow - temperatureDecEffect, 15);
 				}
 			}
 		}
-		else { //effectiveFlow != 0
-			if (ENVmoistureLevel + (effectiveFlow + 2 - ENVtemperature)- temperatureDecEffect < 0) {
+		else { //effectiveFlow != 0 & temperature == 2
+			if (ENVmoistureLevel + (effectiveFlow - 1)- temperatureDecEffect < 0) {
 				return 0;
 			}
-			else if (ENVmoistureLevel + (effectiveFlow + 2 - ENVtemperature)- temperatureDecEffect > 15) {
+			else if (ENVmoistureLevel + (effectiveFlow - 1)- temperatureDecEffect > 15) {
 				return 15;
 			}
 			else {
-				if(randomValue + ENVmoistureLevel + (effectiveFlow + 2 - ENVtemperature)- temperatureDecEffect < 0) {
+				if(randomValue + ENVmoistureLevel + (effectiveFlow - 1)- temperatureDecEffect < 0) {
 					return 0;
 				}
 				else {
-					return Math.min(randomValue + ENVmoistureLevel + (effectiveFlow + 2 - ENVtemperature)- temperatureDecEffect, 15);
+					return Math.min(randomValue + ENVmoistureLevel + (effectiveFlow - 1)- temperatureDecEffect, 15);
 				}
 			}
 		}
