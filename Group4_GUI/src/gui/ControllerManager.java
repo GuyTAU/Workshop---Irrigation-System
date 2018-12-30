@@ -44,6 +44,7 @@ public class ControllerManager {
 	/*** Used for generating moisture value possible range ***/
 	int temperatureDecEffect;
 	int effectiveFlow; // 0-none, 1-light, 2-moderate, 3-heavy
+	int prevTemperature;
 
 
 	
@@ -65,7 +66,7 @@ public class ControllerManager {
 		Random rand = new Random();
 		int randomValue = rand.nextInt(3) + -1;
 		System.out.println(randomValue);
-		if (ENVtemperature != 2 | effectiveFlow == 0) {
+		if (prevTemperature != 2 | effectiveFlow == 0) {
 			if (ENVmoistureLevel + effectiveFlow - temperatureDecEffect < 0) {
 				return 0;
 			}
@@ -158,6 +159,7 @@ public class ControllerManager {
 		SYSirrigationFlow = Integer.parseInt(curValues.get("irrigationFlow"));
 		SYSdeviationAlert = Boolean.parseBoolean(curValues.get("deviationAlert"));
 		
+		prevTemperature = ENVtemperature;
 		temperatureDecEffect = ENVtemperature+1; //Next moisture will be based on this value
 		effectiveFlow = ENVrainPower + SYSirrigationFlow; //and on this value
 		
