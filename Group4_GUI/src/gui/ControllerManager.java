@@ -125,6 +125,9 @@ public class ControllerManager {
 		ctrlExec.setInputValue("lowerBound", "" + ENVlowerBound);
 		ctrlExec.setInputValue("upperBound", "" + ENVupperBound);
 		ctrlExec.setInputValue("moistureLevel", "" + ENVmoistureLevel);
+		for (int i=0; i<24; i++) {
+			ctrlExec.setInputValue("schedule_table[" + i + "]", "" + ENVschedule[i]);
+		}
 		
 		
 		//Try to update the state of the controller, provided the above user inputs
