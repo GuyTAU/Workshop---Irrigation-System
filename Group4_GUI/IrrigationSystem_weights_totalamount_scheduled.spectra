@@ -10,7 +10,7 @@ module IrrigationSystem
 /*******************/
 /***** DEFINES *****/
 /*******************/	
-define minBoundDiff := 3; //3 IS THE MINIMUM DIFF! (NEED TO DECIDE ON A DIFF)
+define minBoundDiff := 2; //2 IS THE MINIMUM DIFF! (NEED TO DECIDE ON A DIFF)
 define isBelowRange := (moistureLevel < lowerBound);
 define isAboveRange := (moistureLevel > upperBound);
 
@@ -61,7 +61,7 @@ asm G nextIsNight -> ((next(temperature) = 0) | (next(temperature) = 1));
 asm G (next (upperBound) = upperBound);
 asm G (next (lowerBound) = lowerBound);
 asm (lowerBound < upperBound);
-asm (upperBound - lowerBound) > minBoundDiff; //NEED TO DECIDE ON A DIFF
+asm (upperBound - lowerBound) >= minBoundDiff;
 
 //Temperature doesn't change drastically
 //asm G (temperature = 0) -> (!(next(temperature) = 2));
@@ -167,37 +167,36 @@ gar G (mode = 1) -> (irrigationFlow = manualModeUserFlow);
  
 //USING WEIGHTS TO SAVE WATER:
 
-weight -1
-	(mode = 0) & (irrigationFlow = 1);
-	
-weight -2
-	(mode = 0) & (irrigationFlow = 2);
-	
-weight -3
-	(mode = 0) & (irrigationFlow = 3);
-	
-weight -4
-	(mode = 0) & (irrigationFlow = 4);
-	
-weight -5
-	(mode = 0) & (irrigationFlow = 5);
-	
-weight 500
-	(mode = 0) & (irrigationFlow = 0) & !isBelowRange;
-	
-weight 20
-	(mode = 0) & (irrigationFlow = 0);
-	
+//weight -1
+//	(mode = 0) & (irrigationFlow = 1);
+//	
+//weight -2
+//	(mode = 0) & (irrigationFlow = 2);
+//	
+//weight -3
+//	(mode = 0) & (irrigationFlow = 3);
+//	
+//weight -4
+//	(mode = 0) & (irrigationFlow = 4);
+//	
+//weight -5
+//	(mode = 0) & (irrigationFlow = 5);
+//	
+//weight 500
+//	(mode = 0) & (irrigationFlow = 0) & !isBelowRange;
+//	
+//weight 20
+//	(mode = 0) & (irrigationFlow = 0);
+//	
 //weight -1
 //	(mode = 0) & isBelowRange;
 
  
  
 //DAILY AMOUNT OF WATER USAGE IS RESTRICTED: 
-/*
-define maxWaterAmountPerDay := 1000;	
+define maxWaterAmountPerDay := 2000;	
  
- sys Int(0..1020) DailyWaterAmount;
+ sys Int(0..2020) DailyWaterAmount;
  
  gar DailyWaterAmount = 0; //initial value is 0
  gar G (PREV(mode = 0) & (mode = 0) & (!(PREV(hour = 23) & (hour = 0 )))) -> (next(DailyWaterAmount) = DailyWaterAmount + irrigationFlow); //add current amount of water to total daily usage 
@@ -205,7 +204,6 @@ define maxWaterAmountPerDay := 1000;
  gar G (PREV(mode != 0) & (mode = 0)) -> (next(DailyWaterAmount) = 0 + irrigationFlow); //restart, back to automatic mode!
  gar G (mode = 0) -> (DailyWaterAmount <= maxWaterAmountPerDay); 
  
- */
  
  
  
