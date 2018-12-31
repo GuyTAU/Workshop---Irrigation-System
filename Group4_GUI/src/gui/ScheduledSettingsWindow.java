@@ -63,17 +63,17 @@ public class ScheduledSettingsWindow extends JDialog {
 		separator.setBounds(10, 42, 550, 13);
 		getContentPane().add(separator);
 		
-		final JComboBox<Integer> cbFlowRate = new JComboBox<Integer>();
-		cbFlowRate.setBounds(52, 138, 40, 23);
-		getContentPane().add(cbFlowRate);
-		for(int i = 0; i < 5; i++) {
-			cbFlowRate.addItem(i+1);
-		}
-		cbFlowRate.setSelectedIndex(gm.ENVmanualModeUserFlow-1);
+		//final JComboBox<Integer> cbFlowRate = new JComboBox<Integer>();
+		//cbFlowRate.setBounds(52, 138, 40, 23);
+		//getContentPane().add(cbFlowRate);
+		//for(int i = 0; i < 5; i++) {
+		//	cbFlowRate.addItem(i+1);
+		//}
+		//cbFlowRate.setSelectedIndex(gm.ENVmanualModeUserFlow-1);
 		
-		JLabel lblRate = new JLabel("Rate:");
-		lblRate.setBounds(10, 142, 40, 14);
-		getContentPane().add(lblRate);
+		//JLabel lblRate = new JLabel("Rate:");
+		//lblRate.setBounds(10, 142, 40, 14);
+		//getContentPane().add(lblRate);
 		
 		JButton btnCheck = new JButton("Check");
 		
@@ -114,7 +114,7 @@ public class ScheduledSettingsWindow extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				for(int i = 0; i < 24; i++) {
 					gm.ENVschedule[i] = cb_hour[i].isSelected();
-					gm.ENVmanualModeUserFlow = cbFlowRate.getSelectedIndex()+1;
+					//gm.ENVmanualModeUserFlow = cbFlowRate.getSelectedIndex()+1;
 				}
 				dispose();
 			}

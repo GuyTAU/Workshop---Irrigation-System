@@ -33,6 +33,7 @@ import javax.swing.border.TitledBorder;
 
 import com.sun.xml.internal.ws.util.StringUtils;
 
+import misc.ControllerExecutor;
 import misc.ControllerExecutorException;
 
 import javax.swing.UIManager;
@@ -71,7 +72,7 @@ public class MyWindow extends JFrame {
 	private JLabel[] cloudLabels = new JLabel[3];
 	private TextField lowerBoundField;
 	private TextField upperBoundField;
-	private TextField upperBoundtextField; //Here user enters upper bound
+	private TextField upperBoundTextField; //Here user enters upper bound
 	private TextField lowerBoundTextField; //Here user enters lower bound
 	public Button but_sim1, but_sim2, but_sim3, but_stopSim, but_updateState; 
 	
@@ -257,7 +258,7 @@ public class MyWindow extends JFrame {
 		/*
 		 * Manual Irrigation Flow buttons
 		 */
-		JMenu mnManualIrrigationFlow = new JMenu("Manual Irrigation Flow");
+		JMenu mnManualIrrigationFlow = new JMenu("Manual/Scheduled Irrigation Flow");
 		menuBar.add(mnManualIrrigationFlow);
 		
 		JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem("0");
@@ -330,7 +331,7 @@ public class MyWindow extends JFrame {
 				//take value of lower bound and upper bound
 				int lowerBound, upperBound;
 				try {
-					upperBound = Integer.parseInt(upperBoundtextField.getText());
+					upperBound = Integer.parseInt(upperBoundTextField.getText());
 					lowerBound = Integer.parseInt(lowerBoundTextField.getText());
 				} catch(NumberFormatException nfe) {
 					JOptionPane.showMessageDialog(contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
@@ -340,7 +341,7 @@ public class MyWindow extends JFrame {
 					JOptionPane.showMessageDialog(contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				gm.ENVupperBound = Integer.parseInt(upperBoundtextField.getText());
+				gm.ENVupperBound = Integer.parseInt(upperBoundTextField.getText());
 				if (upperBound > 15 || upperBound < 0) {
 					JOptionPane.showMessageDialog(contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
 					return;
@@ -447,9 +448,9 @@ public class MyWindow extends JFrame {
 		/*
 		 * Text field for lower bound
 		 */
-		upperBoundtextField = new TextField();
-		upperBoundtextField.setBounds(157, 256, 24, 19);
-		panel.add(upperBoundtextField);
+		upperBoundTextField = new TextField();
+		upperBoundTextField.setBounds(157, 256, 24, 19);
+		panel.add(upperBoundTextField);
 
 		
 		
@@ -513,6 +514,10 @@ public class MyWindow extends JFrame {
 				if(timer != null) {
 				timer.stop();
 				reenableButtons(selfRef);
+				selfRef.gm.ctrlExec = new ControllerExecutor();
+				selfRef.upperBoundTextField.setEditable(true);
+				selfRef.lowerBoundTextField.setEditable(true);
+
 				}
 			}
 		});
@@ -607,10 +612,10 @@ public class MyWindow extends JFrame {
 	
 	void updatePicture() {
 		lowerBoundTextField.setText(gm.ENVlowerBound+"");
-		upperBoundtextField.setText(gm.ENVupperBound+"");
+		upperBoundTextField.setText(gm.ENVupperBound+"");
 
 		this.alertLabel.setVisible(gm.SYSdeviationAlert);
-		this.upperBoundtextField.setEditable(false); //once decided = cannot be changed
+		this.upperBoundTextField.setEditable(false); //once decided = cannot be changed
 		this.lowerBoundTextField.setEditable(false); //once decided = cannot be changed
 		minutes++;
 		if(minutes == 6) minutes = 0;
@@ -623,6 +628,9 @@ public class MyWindow extends JFrame {
 		}
 		else if (gm.ENVmode == 1) {
 			this.modeLabel.setText("Mode: Manual");
+		}
+		else if (gm.ENVmode == 2) {
+			this.modeLabel.setText("Mode: Scheduled");
 		}
 		if (gm.ENVtemperature == 0) {
 			this.temperatureLabel.setText("Temperature: Cold");
@@ -709,8 +717,8 @@ public class MyWindow extends JFrame {
 				}
 				window.gm.ENVmode = 0;
 				window.gm.ENVmanualModeUserFlow = 0; //Doesn't matter
-				window.gm.ENVlowerBound = 10;
-				window.gm.ENVupperBound = 14;
+				//take value of lower bound and upper bound
+				
 				try {
 					window.gm.updateState();
 				} catch (ControllerExecutorException e1) {
@@ -720,7 +728,31 @@ public class MyWindow extends JFrame {
 				window.revalidate();
 			}
 		};
-		
+		int lowerBound, upperBound;
+		try {
+			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
+			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		} catch(NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		if(upperBound <= lowerBound) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
+		if (upperBound > 15 || upperBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = upperBound;
+		window.upperBoundSet = true;
+		if (lowerBound > 15 || lowerBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		window.lowerBoundSet = true;
 		timer = new Timer(1000,simListener);
 		timer.setInitialDelay(0);
 		timer.start();
