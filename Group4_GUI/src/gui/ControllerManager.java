@@ -44,6 +44,7 @@ public class ControllerManager {
 	/*** Used for generating moisture value possible range ***/
 	int temperatureDecEffect;
 	int effectiveFlow; // 0-none, 1-light, 2-moderate, 3-heavy
+	int prevTemperature;
 
 
 	
@@ -65,35 +66,35 @@ public class ControllerManager {
 		Random rand = new Random();
 		int randomValue = rand.nextInt(3) + -1;
 		System.out.println(randomValue);
-		if (effectiveFlow == 0) {
-			if (ENVmoistureLevel - temperatureDecEffect < 0) {
+		if (prevTemperature != 2 | effectiveFlow == 0) {
+			if (ENVmoistureLevel + effectiveFlow - temperatureDecEffect < 0) {
 				return 0;
 			}
-			else if (ENVmoistureLevel - temperatureDecEffect > 15) {
+			else if (ENVmoistureLevel + effectiveFlow - temperatureDecEffect > 15) {
 				return 15;
 			}
 			else {
-				if (randomValue + ENVmoistureLevel - temperatureDecEffect <0) {
+				if (randomValue + ENVmoistureLevel + effectiveFlow - temperatureDecEffect <0) {
 					return 0;
 				}
 				else {
-					return Math.min(randomValue + ENVmoistureLevel - temperatureDecEffect, 15);
+					return Math.min(randomValue + ENVmoistureLevel + effectiveFlow - temperatureDecEffect, 15);
 				}
 			}
 		}
-		else { //effectiveFlow != 0
-			if (ENVmoistureLevel + (effectiveFlow + 2 - ENVtemperature)- temperatureDecEffect < 0) {
+		else { //effectiveFlow != 0 & temperature == 2
+			if (ENVmoistureLevel + (effectiveFlow - 1)- temperatureDecEffect < 0) {
 				return 0;
 			}
-			else if (ENVmoistureLevel + (effectiveFlow + 2 - ENVtemperature)- temperatureDecEffect > 15) {
+			else if (ENVmoistureLevel + (effectiveFlow - 1)- temperatureDecEffect > 15) {
 				return 15;
 			}
 			else {
-				if(randomValue + ENVmoistureLevel + (effectiveFlow + 2 - ENVtemperature)- temperatureDecEffect < 0) {
+				if(randomValue + ENVmoistureLevel + (effectiveFlow - 1)- temperatureDecEffect < 0) {
 					return 0;
 				}
 				else {
-					return Math.min(randomValue + ENVmoistureLevel + (effectiveFlow + 2 - ENVtemperature)- temperatureDecEffect, 15);
+					return Math.min(randomValue + ENVmoistureLevel + (effectiveFlow - 1)- temperatureDecEffect, 15);
 				}
 			}
 		}
@@ -124,6 +125,9 @@ public class ControllerManager {
 		ctrlExec.setInputValue("lowerBound", "" + ENVlowerBound);
 		ctrlExec.setInputValue("upperBound", "" + ENVupperBound);
 		ctrlExec.setInputValue("moistureLevel", "" + ENVmoistureLevel);
+		for (int i=0; i<24; i++) {
+			ctrlExec.setInputValue("schedule_table[" + i + "]", "" + ENVschedule[i]);
+		}
 		
 		
 		//Try to update the state of the controller, provided the above user inputs
@@ -158,6 +162,7 @@ public class ControllerManager {
 		SYSirrigationFlow = Integer.parseInt(curValues.get("irrigationFlow"));
 		SYSdeviationAlert = Boolean.parseBoolean(curValues.get("deviationAlert"));
 		
+		prevTemperature = ENVtemperature;
 		temperatureDecEffect = ENVtemperature+1; //Next moisture will be based on this value
 		effectiveFlow = ENVrainPower + SYSirrigationFlow; //and on this value
 		

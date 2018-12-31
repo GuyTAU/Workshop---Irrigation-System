@@ -701,11 +701,16 @@ public class MyWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				disableButtons(window);
 				window.gm.ENVrainPower = 0;
-				window.gm.ENVtemperature = 2;
+				if ((window.gm.ENVtime >= 21 & window.gm.ENVtime <= 23) | (window.gm.ENVtime >= 0 & window.gm.ENVtime <= 4)) {
+					window.gm.ENVtemperature = 0;
+				}
+				else {
+					window.gm.ENVtemperature = 2;
+				}
 				window.gm.ENVmode = 0;
 				window.gm.ENVmanualModeUserFlow = 0; //Doesn't matter
 				window.gm.ENVlowerBound = 10;
-				window.gm.ENVupperBound = 12;
+				window.gm.ENVupperBound = 14;
 				try {
 					window.gm.updateState();
 				} catch (ControllerExecutorException e1) {

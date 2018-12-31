@@ -64,8 +64,8 @@ asm (lowerBound < upperBound);
 asm (upperBound - lowerBound) > minBoundDiff; //NEED TO DECIDE ON A DIFF
 
 //Temperature doesn't change drastically
-asm G (temperature = 0) -> (!(next(temperature) = 2));
-asm G (temperature = 2) -> (!(next(temperature) = 0));
+//asm G (temperature = 0) -> (!(next(temperature) = 2));
+//asm G (temperature = 2) -> (!(next(temperature) = 0));
 
 
 //hour assumptions
@@ -75,36 +75,28 @@ asm GF (hour != next(hour)); //ensure time is progressing
 
 //moisture assumptions:
 
-//
-//asm G (moistureLevel + effectiveFlow - temperatureDecEffect < 0) -> (next(moistureLevel) = 0); //Avoid no-well separation.
-//asm G (moistureLevel + effectiveFlow - temperatureDecEffect > 15) -> (next(moistureLevel) = 15); //Avoid no-well separation.
-//asm G ((moistureLevel + effectiveFlow - temperatureDecEffect >= 0) & (moistureLevel + effectiveFlow - temperatureDecEffect <= 15)) ->
-//			((next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect) | 
-//			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect - 1) |
-//			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect + 1));
 
 
-
-//EFFECTIVE FLOW IS 0 - NO EVAPORATION
-asm G ((effectiveFlow = 0) & (moistureLevel - temperatureDecEffect < 0)) ->
+//EFFECTIVE FLOW IS 0 OR TEMPERATURE IS NOT HOT - NO EVAPORATION
+asm G (((temperature != 2) | (effectiveFlow = 0)) & (moistureLevel + effectiveFlow - temperatureDecEffect < 0)) ->
 			(next(moistureLevel) = 0); //Avoid no-well separation
 
-asm G ((effectiveFlow = 0) & (moistureLevel - temperatureDecEffect > 15)) ->
+asm G (((temperature != 2) | (effectiveFlow = 0)) & (moistureLevel + effectiveFlow - temperatureDecEffect > 15)) ->
 			(next(moistureLevel) = 15); //Avoid no-well separation
 
-asm G ((effectiveFlow = 0) & (moistureLevel - temperatureDecEffect >= 0) & (moistureLevel - temperatureDecEffect <= 15)) ->
-			((next(moistureLevel) = moistureLevel - temperatureDecEffect) |
-			(next(moistureLevel) = moistureLevel - temperatureDecEffect - 1) | //-1 for randomness
-			(next(moistureLevel) = moistureLevel - temperatureDecEffect + 1));	//+1 for randomness
+asm G (((temperature != 2) | (effectiveFlow = 0)) & (moistureLevel + effectiveFlow - temperatureDecEffect >= 0) & (moistureLevel + effectiveFlow - temperatureDecEffect <= 15)) ->
+			((next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect) |
+			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect - 1) | //-1 for randomness
+			(next(moistureLevel) = moistureLevel + effectiveFlow - temperatureDecEffect + 1));	//+1 for randomness
  
  
-//EFFECTIVE FLOW IS GREATER THAN 0 - THERE IS EVAPORATION
-asm G ((effectiveFlow != 0) & moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect < 0) -> (next(moistureLevel) = 0); //Avoid no-well separation.
-asm G ((effectiveFlow != 0) & moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect > 15) -> (next(moistureLevel) = 15); //Avoid no-well separation.
-asm G ((effectiveFlow != 0) & (moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect >= 0) & (moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect <= 15)) ->
-			((next(moistureLevel) = moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect) |
-			(next(moistureLevel) = moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect -1 ) | //-1 for randomness
-			(next(moistureLevel) = moistureLevel + (effectiveFlow + 2 - temperature) - temperatureDecEffect + 1)); //+1 for randomness
+//EFFECTIVE FLOW IS GREATER THAN 0 AND TEMPERATUER IS HOT - THERE IS EVAPORATION
+asm G (((temperature = 2) & (effectiveFlow != 0)) & moistureLevel + (effectiveFlow - 1) - temperatureDecEffect < 0) -> (next(moistureLevel) = 0); //Avoid no-well separation.
+asm G (((temperature = 2) & (effectiveFlow != 0)) & moistureLevel + (effectiveFlow - 1) - temperatureDecEffect > 15) -> (next(moistureLevel) = 15); //Avoid no-well separation.
+asm G (((temperature = 2) & (effectiveFlow != 0)) & (moistureLevel + (effectiveFlow - 1) - temperatureDecEffect >= 0) & (moistureLevel + (effectiveFlow  - 1) - temperatureDecEffect <= 15)) ->
+			((next(moistureLevel) = moistureLevel + (effectiveFlow  - 1) - temperatureDecEffect) |
+			(next(moistureLevel) = moistureLevel + (effectiveFlow - 1) - temperatureDecEffect -1 ) | //-1 for randomness
+			(next(moistureLevel) = moistureLevel + (effectiveFlow  - 1) - temperatureDecEffect + 1)); //+1 for randomness
 
 
 /**********************/
