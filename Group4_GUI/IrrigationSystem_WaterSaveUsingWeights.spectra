@@ -30,7 +30,6 @@ sys boolean deviationAlert;
 /***** ENVIRONMENT VARIABLES *****/
 /*********************************/
 //irrigation mode (SWITCHES)
-//env Int (0..1) mode; //0 - for automatic, 1 - for manual
 env Int (0..2) mode; //0 - for automatic, 1 - for manual, 2 - for scheduled
 env Int (0..5) manualModeUserFlow;
 
@@ -63,10 +62,6 @@ asm G (next (lowerBound) = lowerBound);
 asm (lowerBound < upperBound);
 asm (upperBound - lowerBound) >= minBoundDiff;
 
-//Temperature doesn't change drastically
-//asm G (temperature = 0) -> (!(next(temperature) = 2));
-//asm G (temperature = 2) -> (!(next(temperature) = 0));
-
 
 //hour assumptions
 asm G (hour = 23) -> (next(hour) = 23 | next(hour) = 0);  //keep increasing modulo 24
@@ -74,8 +69,6 @@ asm G (!(hour = 23)) -> ((next(hour) = hour) | (next(hour) = hour+1));
 asm GF (hour != next(hour)); //ensure time is progressing
 
 //moisture assumptions:
-
-
 
 //EFFECTIVE FLOW IS 0 OR TEMPERATURE IS NOT HOT - NO EVAPORATION
 asm G (((temperature != 2) | (effectiveFlow = 0)) & (moistureLevel + effectiveFlow - temperatureDecEffect < 0)) ->
@@ -112,9 +105,6 @@ gar G (mode = 1) -> (irrigationFlow = manualModeUserFlow);
 
 
 //SCHEDULED MODE:
-//gar G (mode = 2) -> (irrigationFlow = schedule_table[hour]); //throwing error on: "schedule_table[hour]"
-//USING INSTEAD OF ^, ALL OF THESE: 
-
 gar G (mode = 2 & hour = 0 & schedule_table[0]) -> (irrigationFlow = manualModeUserFlow);
 gar G (mode = 2 & hour = 0 & !schedule_table[0]) -> (irrigationFlow = 0);
 gar G (mode = 2 & hour = 1 & schedule_table[1]) -> (irrigationFlow = manualModeUserFlow);
@@ -165,8 +155,6 @@ gar G (mode = 2 & hour = 23 & schedule_table[23]) -> (irrigationFlow = manualMod
 gar G (mode = 2 & hour = 23 & !schedule_table[23]) -> (irrigationFlow = 0);
  
 //USING WEIGHTS TO SAVE WATER:
-//REALIZABLE WITH WEIGHTS- STILL NEED TO CHECK THAT IT WORKS
-/*
 weight -1
 	(mode = 0) & (irrigationFlow = 3);
 	
@@ -184,27 +172,5 @@ weight 5
 
 weight 1
 	(mode = 0) & !isBelowRange;
-*/
 
- 
-//DAILY AMOUNT OF WATER USAGE IS RESTRICTED: 
-define maxWaterAmountPerDay := 2000;	
- 
- sys Int(0..2020) DailyWaterAmount;
- 
- gar DailyWaterAmount = 0; //initial value is 0
- gar G (PREV(mode = 0) & (mode = 0) & (!(PREV(hour = 23) & (hour = 0 )))) -> (next(DailyWaterAmount) = DailyWaterAmount + irrigationFlow); //add current amount of water to total daily usage 
- gar G (PREV(mode = 0) & (mode = 0) & (PREV(hour = 23) & (hour = 0 ))) -> (next(DailyWaterAmount) = 0 + irrigationFlow); //restart, new day! 
- gar G (PREV(mode != 0) & (mode = 0)) -> (next(DailyWaterAmount) = 0 + irrigationFlow); //restart, back to automatic mode!
- gar G (mode = 0) -> (DailyWaterAmount <= maxWaterAmountPerDay); 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
