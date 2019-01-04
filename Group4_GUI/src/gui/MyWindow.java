@@ -50,6 +50,8 @@ import javax.swing.Timer;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Random;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 
@@ -488,7 +490,7 @@ public class MyWindow extends JFrame {
 		/*
 		 * Simulation buttons
 		 */
-		but_sim1 = new Button("Simulation 1");
+		but_sim1 = new Button("Drought Simulation");
 		but_sim1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -503,9 +505,35 @@ public class MyWindow extends JFrame {
 			}
 		});
 		
-		but_sim2 = new Button("Simulation 2");
+		but_sim2 = new Button("Rainy Simulation");
+		but_sim2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					simulation2(selfRef);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ControllerExecutorException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		
-		but_sim3 = new Button("Simulation 3");
+		but_sim3 = new Button("Mode Switch Simulation");
+		but_sim3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					simulation3(selfRef);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ControllerExecutorException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		but_stopSim = new Button("Stop Simulation");
 		but_stopSim.setEnabled(false);
@@ -717,6 +745,134 @@ public class MyWindow extends JFrame {
 				}
 				window.gm.ENVmode = 0;
 				window.gm.ENVmanualModeUserFlow = 0; //Doesn't matter
+				//take value of lower bound and upper bound
+				
+				try {
+					window.gm.updateState();
+				} catch (ControllerExecutorException e1) {
+					e1.printStackTrace();
+				}
+				window.updatePicture();
+				window.revalidate();
+			}
+		};
+		int lowerBound, upperBound;
+		try {
+			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
+			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		} catch(NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		if(upperBound <= lowerBound) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
+		if (upperBound > 15 || upperBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = upperBound;
+		window.upperBoundSet = true;
+		if (lowerBound > 15 || lowerBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		window.lowerBoundSet = true;
+		timer = new Timer(1000,simListener);
+		timer.setInitialDelay(0);
+		timer.start();
+	}
+	
+	
+	
+	public static void simulation2(final MyWindow window) throws InterruptedException, ControllerExecutorException {
+		
+		ActionListener simListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				disableButtons(window);
+				Random rand = new Random();
+				int randomValue = rand.nextInt(4)+1;
+				window.gm.ENVrainPower = Math.min(randomValue, 3);
+				if ((window.gm.ENVtime >= 21 & window.gm.ENVtime <= 23) | (window.gm.ENVtime >= 0 & window.gm.ENVtime <= 4)) {
+					window.gm.ENVtemperature = 0;
+				}
+				else {
+					randomValue = rand.nextInt(3);
+					window.gm.ENVtemperature = randomValue;
+				}
+				window.gm.ENVmode = 0;
+				window.gm.ENVmanualModeUserFlow = 0; //Doesn't matter
+				//take value of lower bound and upper bound
+				
+				try {
+					window.gm.updateState();
+				} catch (ControllerExecutorException e1) {
+					e1.printStackTrace();
+				}
+				window.updatePicture();
+				window.revalidate();
+			}
+		};
+		int lowerBound, upperBound;
+		try {
+			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
+			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		} catch(NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		if(upperBound <= lowerBound) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
+		if (upperBound > 15 || upperBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = upperBound;
+		window.upperBoundSet = true;
+		if (lowerBound > 15 || lowerBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		window.lowerBoundSet = true;
+		timer = new Timer(1000,simListener);
+		timer.setInitialDelay(0);
+		timer.start();
+	}
+	
+	
+	
+	public static void simulation3(final MyWindow window) throws InterruptedException, ControllerExecutorException {
+		
+		ActionListener simListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				disableButtons(window);
+				Random rand = new Random();
+				int randomValue = rand.nextInt(3);
+				window.gm.ENVrainPower = 0;
+				if ((window.gm.ENVtime >= 21 & window.gm.ENVtime <= 23) | (window.gm.ENVtime >= 0 & window.gm.ENVtime <= 4)) {
+					window.gm.ENVtemperature = 0;
+				}
+				else {
+					window.gm.ENVtemperature = randomValue;
+				}
+				if (window.gm.ENVtime % 2 == 0) { //switch mode every hour states
+					window.gm.ENVmode = 0;
+				}
+				else {
+					window.gm.ENVmode = 1;
+				}
+				window.gm.ENVmanualModeUserFlow = 0;
 				//take value of lower bound and upper bound
 				
 				try {
