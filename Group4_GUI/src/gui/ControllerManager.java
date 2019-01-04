@@ -62,9 +62,12 @@ public class ControllerManager {
 	 * and prev irrigation flow.
 	 */
 	
-	public int generateENVmoistureLevel() {
+	public int generateENVmoistureLevel(boolean drought) {
 		Random rand = new Random();
 		int randomValue = rand.nextInt(3) + -1;
+		if (drought == true) {
+			randomValue = -1;
+		}
 		System.out.println(randomValue);
 		if (prevTemperature != 2 | effectiveFlow == 0) {
 			if (ENVmoistureLevel + effectiveFlow - temperatureDecEffect < 0) {
@@ -104,10 +107,10 @@ public class ControllerManager {
 	 * @throws ControllerExecutorException 
 	 * 
 	 */
-	public void updateState() throws ControllerExecutorException {
+	public void updateState(boolean drought) throws ControllerExecutorException {
 		
 		//Need to get a random value for moisture.
-		ENVmoistureLevel = generateENVmoistureLevel();
+		ENVmoistureLevel = generateENVmoistureLevel(drought);
 		//increment state number by one for every state update
 		stateNum++;
 		if (stateNum%6 == 0) {

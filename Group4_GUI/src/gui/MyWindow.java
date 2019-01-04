@@ -375,7 +375,7 @@ public class MyWindow extends JFrame {
 				}
 				//Push value to controller and get outputs.
 				try {
-					gm.updateState();
+					gm.updateState(false);
 				} catch (ControllerExecutorException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -748,7 +748,7 @@ public class MyWindow extends JFrame {
 				//take value of lower bound and upper bound
 				
 				try {
-					window.gm.updateState();
+					window.gm.updateState(true);
 				} catch (ControllerExecutorException e1) {
 					e1.printStackTrace();
 				}
@@ -810,7 +810,7 @@ public class MyWindow extends JFrame {
 				//take value of lower bound and upper bound
 				
 				try {
-					window.gm.updateState();
+					window.gm.updateState(false);
 				} catch (ControllerExecutorException e1) {
 					e1.printStackTrace();
 				}
@@ -866,17 +866,19 @@ public class MyWindow extends JFrame {
 				else {
 					window.gm.ENVtemperature = randomValue;
 				}
-				if (window.gm.ENVtime % 2 == 0) { //switch mode every hour states
+				if (window.gm.ENVtime % 3 == 0) { //switch mode every hour
 					window.gm.ENVmode = 0;
 				}
-				else {
+				else if (window.gm.ENVtime % 3 == 1) {
 					window.gm.ENVmode = 1;
 				}
-				window.gm.ENVmanualModeUserFlow = 0;
+				else {
+					window.gm.ENVmode = 2;
+				}
 				//take value of lower bound and upper bound
 				
 				try {
-					window.gm.updateState();
+					window.gm.updateState(false);
 				} catch (ControllerExecutorException e1) {
 					e1.printStackTrace();
 				}
