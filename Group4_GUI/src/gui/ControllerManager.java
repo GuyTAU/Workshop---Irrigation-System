@@ -103,6 +103,12 @@ public class ControllerManager {
 		}
 	}
 	
+	
+	
+	public void updateState() throws ControllerExecutorException {
+		updateState(false);
+	}
+	
 	/**
 	 * @throws ControllerExecutorException 
 	 * 
