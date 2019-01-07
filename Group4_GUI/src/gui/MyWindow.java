@@ -54,6 +54,7 @@ import java.util.Random;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class MyWindow extends JFrame {
 
@@ -76,7 +77,7 @@ public class MyWindow extends JFrame {
 	private TextField upperBoundField;
 	private TextField upperBoundTextField; //Here user enters upper bound
 	private TextField lowerBoundTextField; //Here user enters lower bound
-	public Button but_sim1, but_sim2, but_sim3, but_stopSim, but_updateState; 
+	public Button but_sim1, but_sim2, but_sim3, but_sim4, but_stopSim, but_updateState; 
 	
 	//flags for set values
 	private boolean tempSet = false;
@@ -375,9 +376,8 @@ public class MyWindow extends JFrame {
 				}
 				//Push value to controller and get outputs.
 				try {
-					gm.updateState(false);
+					gm.updateState();
 				} catch (ControllerExecutorException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				updatePicture();
@@ -389,6 +389,7 @@ public class MyWindow extends JFrame {
 		setContentPane(contentPane);
 		
 		JPanel panel = new JPanel();
+		panel.setBounds(10, 11, 591, 518);
 		panel.setBackground(Color.WHITE);
 		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel.setLayout(null);
@@ -491,51 +492,66 @@ public class MyWindow extends JFrame {
 		 * Simulation buttons
 		 */
 		but_sim1 = new Button("Drought Simulation");
+		but_sim1.setBounds(611, 270, 167, 50);
 		but_sim1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					simulation1(selfRef);
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (ControllerExecutorException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
 		});
 		
 		but_sim2 = new Button("Rainy Simulation");
+		but_sim2.setBounds(611, 333, 167, 50);
 		but_sim2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					simulation2(selfRef);
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (ControllerExecutorException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
 		});
 		
-		but_sim3 = new Button("Mode Switch Simulation");
+		but_sim3 = new Button("Mode Switch Sim");
+		but_sim3.setBounds(611, 396, 167, 50);
 		but_sim3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					simulation3(selfRef);
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (ControllerExecutorException e1) {
-					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		Button button = new Button("");
+		
+		
+		but_sim4 = new Button("Normal Weather Sim");
+		but_sim4.setBounds(611, 459, 167, 50);
+		contentPane.add(but_sim4);
+		but_sim4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					simulation4(selfRef);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				} catch (ControllerExecutorException e1) {
 					e1.printStackTrace();
 				}
 			}
 		});
 		
 		but_stopSim = new Button("Stop Simulation");
+		but_stopSim.setBounds(611, 200, 167, 50);
 		but_stopSim.setEnabled(false);
 		but_stopSim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -564,8 +580,10 @@ public class MyWindow extends JFrame {
 		
 		
 		JLabel groupLogo = new JLabel("");
+		groupLogo.setBounds(626, 11, 140, 178);
 		groupLogo.setBackground(Color.WHITE);
 		groupLogo.setIcon(new ImageIcon("img/irrigation logo.jpg"));
+		contentPane.setLayout(null);
 		
 		
 		JLabel tapIcon = new JLabel("");
@@ -602,38 +620,14 @@ public class MyWindow extends JFrame {
 		irrigationFlowLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 25));
 		irrigationFlowLabel.setBounds(543, 367, 38, 47);
 		panel.add(irrigationFlowLabel);
-		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(5)
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 591, GroupLayout.PREFERRED_SIZE)
-					.addGap(33)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(groupLogo, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
-						.addComponent(but_stopSim, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
-						.addComponent(but_sim1, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
-						.addComponent(but_sim2, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
-						.addComponent(but_sim3, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)))
-		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(6)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 518, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(groupLogo, GroupLayout.PREFERRED_SIZE, 178, GroupLayout.PREFERRED_SIZE)
-							.addGap(51)
-							.addComponent(but_stopSim, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-							.addGap(30)
-							.addComponent(but_sim1, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-							.addGap(30)
-							.addComponent(but_sim2, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-							.addGap(30)
-							.addComponent(but_sim3, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))))
-		);
-		contentPane.setLayout(gl_contentPane);
+		contentPane.add(panel);
+		contentPane.add(groupLogo);
+		contentPane.add(but_stopSim);
+		contentPane.add(but_sim1);
+		contentPane.add(but_sim2);
+		contentPane.add(but_sim3);
+		
+
 		
 		
 	}
@@ -707,6 +701,7 @@ public class MyWindow extends JFrame {
 		window.but_sim1.setEnabled(false);
 		window.but_sim2.setEnabled(false);
 		window.but_sim3.setEnabled(false);
+		window.but_sim4.setEnabled(false);
 		window.but_updateState.setEnabled(false);
 		window.but_stopSim.setEnabled(true);
 	}
@@ -725,6 +720,7 @@ public class MyWindow extends JFrame {
 		window.but_sim1.setEnabled(true);
 		window.but_sim2.setEnabled(true);
 		window.but_sim3.setEnabled(true);
+		window.but_sim4.setEnabled(true);
 		window.but_updateState.setEnabled(true);
 		window.but_stopSim.setEnabled(false);
 	}	
@@ -810,7 +806,7 @@ public class MyWindow extends JFrame {
 				//take value of lower bound and upper bound
 				
 				try {
-					window.gm.updateState(false);
+					window.gm.updateState();
 				} catch (ControllerExecutorException e1) {
 					e1.printStackTrace();
 				}
@@ -878,7 +874,62 @@ public class MyWindow extends JFrame {
 				//take value of lower bound and upper bound
 				
 				try {
-					window.gm.updateState(false);
+					window.gm.updateState();
+				} catch (ControllerExecutorException e1) {
+					e1.printStackTrace();
+				}
+				window.updatePicture();
+				window.revalidate();
+			}
+		};
+		int lowerBound, upperBound;
+		try {
+			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
+			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		} catch(NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		if(upperBound <= lowerBound) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
+		if (upperBound > 15 || upperBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = upperBound;
+		window.upperBoundSet = true;
+		if (lowerBound > 15 || lowerBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		window.lowerBoundSet = true;
+		timer = new Timer(1000,simListener);
+		timer.setInitialDelay(0);
+		timer.start();
+	}
+	
+	
+	
+	public static void simulation4(final MyWindow window) throws InterruptedException, ControllerExecutorException {
+		
+		ActionListener simListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				disableButtons(window);
+				window.gm.ENVmode = 0;
+				//arrays holding the attributed=s of each hour
+				int [] temprature = {1,0,1,1,0,2,2,1,2,2,0,2,2,1,0,2,2,1,2,0,0,1,0,0};
+				int [] rainPower =  {0,0,0,0,0,0,2,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0};
+				window.gm.ENVtemperature = temprature[window.gm.ENVtime];
+				window.gm.ENVrainPower = rainPower[window.gm.ENVtime];
+				//take value of lower bound and upper bound
+				try {
+					window.gm.updateState();
 				} catch (ControllerExecutorException e1) {
 					e1.printStackTrace();
 				}

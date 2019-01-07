@@ -96,7 +96,7 @@ public class ScheduledSettingsWindow extends JDialog {
 				checkActionListener(true, cbStartingHour, cbEndingHour, cb_hour);
 			}
 		});
-		btnCheck.setBounds(399, 12, 70, 23);
+		btnCheck.setBounds(353, 12, 100, 23);
 		getContentPane().add(btnCheck);
 		
 		JButton btnUncheck = new JButton("Uncheck");
@@ -105,7 +105,7 @@ public class ScheduledSettingsWindow extends JDialog {
 				checkActionListener(false, cbStartingHour, cbEndingHour, cb_hour);
 			}
 		});
-		btnUncheck.setBounds(487, 12, 73, 23);
+		btnUncheck.setBounds(458, 12, 100, 23);
 		getContentPane().add(btnUncheck);
 		
 		JButton btnOk = new JButton("OK");
