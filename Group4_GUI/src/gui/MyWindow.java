@@ -532,7 +532,6 @@ public class MyWindow extends JFrame {
 				}
 			}
 		});
-		Button button = new Button("");
 		
 		
 		but_sim4 = new Button("Normal Weather Sim");
@@ -556,11 +555,11 @@ public class MyWindow extends JFrame {
 		but_stopSim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(timer != null) {
-				timer.stop();
-				reenableButtons(selfRef);
-				selfRef.gm.ctrlExec = new ControllerExecutor();
-				selfRef.upperBoundTextField.setEditable(true);
-				selfRef.lowerBoundTextField.setEditable(true);
+					timer.stop();
+					reenableButtons(selfRef);
+					selfRef.gm.ctrlExec = new ControllerExecutor();
+					selfRef.upperBoundTextField.setEditable(true);
+					selfRef.lowerBoundTextField.setEditable(true);
 
 				}
 			}
@@ -688,43 +687,91 @@ public class MyWindow extends JFrame {
 	}
 	
 	
-	/*
-	 * Disables all buttons in MyWindow except for the "Stop simulation" button.
+	/**
+	 * Enables or disables all of the buttons and menus in MyWindow window, except for the 
+	 * Stop Simulation button (which is set to the opposite value), according to the value
+	 * of toEnable.
 	 */
-	public static void disableButtons(MyWindow window) {
+	private static void enableOrDisableButtons(MyWindow window, boolean toEnable) {
 		JMenuBar menu = window.getJMenuBar();
 		JMenu item;
 		for(int i=0; i < menu.getMenuCount(); i++) {
 			item = menu.getMenu(i);
-			if(item != null) item.setEnabled(false);
+			if(item != null) item.setEnabled(toEnable);
 		}
-		window.but_sim1.setEnabled(false);
-		window.but_sim2.setEnabled(false);
-		window.but_sim3.setEnabled(false);
-		window.but_sim4.setEnabled(false);
-		window.but_updateState.setEnabled(false);
-		window.but_stopSim.setEnabled(true);
+		window.but_sim1.setEnabled(toEnable);
+		window.but_sim2.setEnabled(toEnable);
+		window.but_sim3.setEnabled(toEnable);
+		window.but_sim4.setEnabled(toEnable);
+		window.but_updateState.setEnabled(toEnable);
+		window.but_stopSim.setEnabled(!toEnable);
+
 	}
 	
 	
-	/*
-	 * Enables all buttons in MyWindow except for the "Stop simulation" button.
+	
+	/**
+	 * Disables all buttons in MyWindow except for the "Stop simulation" button, and sets 
+	 * the color of the stop button to be red with a white label.
+	 */
+	public static void disableButtons(MyWindow window) {
+		enableOrDisableButtons(window, false);
+		window.but_stopSim.setBackground(Color.RED);
+		window.but_stopSim.setForeground(Color.WHITE);
+	}
+	
+	
+	/**
+	 * Enables all buttons in MyWindow except for the "Stop simulation" button, and sets
+	 * the color of the stop button to the default.
 	 */
 	public static void reenableButtons(MyWindow window) {
-		JMenuBar menu = window.getJMenuBar();
-		JMenu item;
-		for(int i=0; i < menu.getMenuCount(); i++) {
-			item = menu.getMenu(i);
-			if(item != null) item.setEnabled(true);
-		}
-		window.but_sim1.setEnabled(true);
-		window.but_sim2.setEnabled(true);
-		window.but_sim3.setEnabled(true);
-		window.but_sim4.setEnabled(true);
-		window.but_updateState.setEnabled(true);
-		window.but_stopSim.setEnabled(false);
-	}	
+		enableOrDisableButtons(window, true);
+		window.but_stopSim.setBackground(null);
+		window.but_stopSim.setForeground(null);
 
+	}	
+	
+	
+	/**
+	 * Checks that the lower/upper bounds are set correctly (if not -- error message),
+	 * and activates the simulation according to the action listener.
+	 */
+	public static void activateSimulation(final MyWindow window, ActionListener listener) {
+		int lowerBound, upperBound;
+		try {
+			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
+			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		} catch(NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		if(upperBound <= lowerBound) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
+		if (upperBound > 15 || upperBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVupperBound = upperBound;
+		window.upperBoundSet = true;
+		if (lowerBound > 15 || lowerBound < 0) {
+			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
+		window.lowerBoundSet = true;
+		timer = new Timer(1000,listener);
+		timer.setInitialDelay(0);
+		timer.start();
+	}
+	
+	
+	/**
+	 * Drought Simulation
+	 */
 	public static void simulation1(final MyWindow window) throws InterruptedException, ControllerExecutorException {
 		
 		ActionListener simListener = new ActionListener() {
@@ -752,38 +799,14 @@ public class MyWindow extends JFrame {
 				window.revalidate();
 			}
 		};
-		int lowerBound, upperBound;
-		try {
-			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
-			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
-		} catch(NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		if(upperBound <= lowerBound) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
-		if (upperBound > 15 || upperBound < 0) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVupperBound = upperBound;
-		window.upperBoundSet = true;
-		if (lowerBound > 15 || lowerBound < 0) {
-			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
-		window.lowerBoundSet = true;
-		timer = new Timer(1000,simListener);
-		timer.setInitialDelay(0);
-		timer.start();
+		
+		activateSimulation(window, simListener);
 	}
 	
 	
-	
+	/**
+	 * Rainy Simulation
+	 */
 	public static void simulation2(final MyWindow window) throws InterruptedException, ControllerExecutorException {
 		
 		ActionListener simListener = new ActionListener() {
@@ -814,38 +837,14 @@ public class MyWindow extends JFrame {
 				window.revalidate();
 			}
 		};
-		int lowerBound, upperBound;
-		try {
-			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
-			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
-		} catch(NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		if(upperBound <= lowerBound) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
-		if (upperBound > 15 || upperBound < 0) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVupperBound = upperBound;
-		window.upperBoundSet = true;
-		if (lowerBound > 15 || lowerBound < 0) {
-			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
-		window.lowerBoundSet = true;
-		timer = new Timer(1000,simListener);
-		timer.setInitialDelay(0);
-		timer.start();
+		
+		activateSimulation(window, simListener);
 	}
 	
 	
-	
+	/**
+	 * Mode Switch Simulation
+	 */
 	public static void simulation3(final MyWindow window) throws InterruptedException, ControllerExecutorException {
 		
 		ActionListener simListener = new ActionListener() {
@@ -882,38 +881,14 @@ public class MyWindow extends JFrame {
 				window.revalidate();
 			}
 		};
-		int lowerBound, upperBound;
-		try {
-			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
-			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
-		} catch(NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		if(upperBound <= lowerBound) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
-		if (upperBound > 15 || upperBound < 0) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVupperBound = upperBound;
-		window.upperBoundSet = true;
-		if (lowerBound > 15 || lowerBound < 0) {
-			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
-		window.lowerBoundSet = true;
-		timer = new Timer(1000,simListener);
-		timer.setInitialDelay(0);
-		timer.start();
+		
+		activateSimulation(window, simListener);
 	}
 	
 	
-	
+	/**
+	 * Normal Weather Simulation
+	 */
 	public static void simulation4(final MyWindow window) throws InterruptedException, ControllerExecutorException {
 		
 		ActionListener simListener = new ActionListener() {
@@ -922,9 +897,10 @@ public class MyWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				disableButtons(window);
 				window.gm.ENVmode = 0;
-				//arrays holding the attributed=s of each hour
+				//arrays holding the attributes of each hour
 				int [] temprature = {1,0,1,1,0,2,2,1,2,2,0,2,2,1,0,2,2,1,2,0,0,1,0,0};
-				int [] rainPower =  {0,0,0,0,0,0,2,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0};
+				int [] rainPower  = {0,0,0,0,0,0,2,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0};
+				//set temperature and rain power according to the arrays
 				window.gm.ENVtemperature = temprature[window.gm.ENVtime];
 				window.gm.ENVrainPower = rainPower[window.gm.ENVtime];
 				//take value of lower bound and upper bound
@@ -937,36 +913,9 @@ public class MyWindow extends JFrame {
 				window.revalidate();
 			}
 		};
-		int lowerBound, upperBound;
-		try {
-			upperBound = Integer.parseInt(window.upperBoundTextField.getText());
-			lowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
-		} catch(NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound and lower bound must be integers.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		if(upperBound <= lowerBound) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound must be higher than the lower bound.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVupperBound = Integer.parseInt(window.upperBoundTextField.getText());
-		if (upperBound > 15 || upperBound < 0) {
-			JOptionPane.showMessageDialog(window.contentPane, "Upper bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVupperBound = upperBound;
-		window.upperBoundSet = true;
-		if (lowerBound > 15 || lowerBound < 0) {
-			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
-		window.lowerBoundSet = true;
-		timer = new Timer(1000,simListener);
-		timer.setInitialDelay(0);
-		timer.start();
+		
+		activateSimulation(window, simListener);
 	}
-	
 	
 
 }
