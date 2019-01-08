@@ -323,6 +323,16 @@ public class MyWindow extends JFrame {
 		});
 		buttonGroup_3.add(checkBoxMenuItem_5);
 		mnManualIrrigationFlow.add(checkBoxMenuItem_5);
+		
+		JCheckBoxMenuItem checkBoxMenuItem_6 = new JCheckBoxMenuItem("6");
+		checkBoxMenuItem_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gm.ENVmanualModeUserFlow = 6;
+				irrigationFlowSet = true;
+			}
+		});
+		buttonGroup_3.add(checkBoxMenuItem_6);
+		mnManualIrrigationFlow.add(checkBoxMenuItem_6);
 				
 		
 		/*
