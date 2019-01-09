@@ -64,9 +64,9 @@ public class ControllerManager {
 	
 	public int generateENVmoistureLevel(boolean drought) {
 		Random rand = new Random();
-		int randomValue = rand.nextInt(3) + -1;
+		int randomValue = rand.nextInt(3) + -1; //make a random value from {-1,0,1}.
 		if (drought == true) {
-			randomValue = -1;
+			randomValue = rand.nextInt(2) + -1; //make a random value from {-1,0}.
 		}
 		System.out.println(randomValue);
 		if (prevTemperature != 2 | effectiveFlow == 0) {
