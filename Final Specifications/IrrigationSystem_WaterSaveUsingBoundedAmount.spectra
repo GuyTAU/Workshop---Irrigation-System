@@ -68,7 +68,7 @@ asm G (hour = 23) -> (next(hour) = 23 | next(hour) = 0);  //keep increasing modu
 asm G (!(hour = 23)) -> ((next(hour) = hour) | (next(hour) = hour+1));
 asm GF (hour != next(hour)); //ensure time is progressing
  
-//hour changes every 6 states
+//hour changes at most every 6 states (the controller changes the hour after exactly 6 states)
 counter hour_count(0..5) { 
 	hour_count = 0;
 	inc: (hour = next(hour));
@@ -174,10 +174,4 @@ define maxWaterAmountPerDay := 2000;
  gar G (PREV(mode = 0) & (mode = 0) & (!(PREV(hour = 23) & (hour = 0 )))) -> (next(DailyWaterAmount) = DailyWaterAmount + irrigationFlow); //add current amount of water to total daily usage 
  gar G (PREV(mode = 0) & (mode = 0) & (PREV(hour = 23) & (hour = 0 ))) -> (next(DailyWaterAmount) = 0 + irrigationFlow); //restart, new day! 
  gar G (PREV(mode != 0) & (mode = 0)) -> (next(DailyWaterAmount) = 0 + irrigationFlow); //restart, back to automatic mode!
- gar G (mode = 0) -> (DailyWaterAmount + irrigationFlow <= maxWaterAmountPerDay); //+irrigationFlow since we aggregate until last state not including this one.
- 
-// asm G ((mode = 0) & (next(mode) = 0) & (!(hour = 23) & (next(hour) = 0))) -> (next(DailyWaterAmount) = DailyWaterAmount + irrigationFlow); //add current amount of water to total daily usage
- //asm G ((mode = 0) & (next(mode) = 0) & ((hour = 23) & (next(hour) = 0))) -> (next(DailyWaterAmount) = 0 + irrigationFlow); //restart, new day!
- //asm G (PREV(mode != 0) & (next(mode) = 0)) -> (next(DailyWaterAmount) = 0 + irrigationFlow); //restart, back to automatic mode!
- 
- 
+ gar G (mode = 0) -> (DailyWaterAmount <= maxWaterAmountPerDay);
