@@ -173,27 +173,3 @@ weight 5
 weight 1
 	(mode = 0) & !isBelowRange;
 
-//weight 5
-//	(mode = 0) & !isBelowRange;
-
-
-//weight -1
-//	(mode = 0) & isBelowRange;
-
-
-//weight 70
-//	mode != 0;
-
-
-
-
-
-/*
- * 
- * 
- * 
- * 
- * 
- */
- */
-
