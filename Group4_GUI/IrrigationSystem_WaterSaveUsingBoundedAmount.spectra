@@ -68,7 +68,7 @@ asm G (hour = 23) -> (next(hour) = 23 | next(hour) = 0);  //keep increasing modu
 asm G (!(hour = 23)) -> ((next(hour) = hour) | (next(hour) = hour+1));
 asm GF (hour != next(hour)); //ensure time is progressing
  
-//hour changes at most every 6 states
+//hour changes at most every 6 states (the controller changes the hour after exactly 6 states)
 counter hour_count(0..5) { 
 	hour_count = 0;
 	inc: (hour = next(hour));
