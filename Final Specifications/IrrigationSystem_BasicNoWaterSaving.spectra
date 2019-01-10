@@ -23,7 +23,7 @@ define nextIsNight := (((hour >= 21) & (hour <= 23)) | ((hour >= 0) & (hour <= 4
 /****************************/
 /***** SYSTEM VARIABLES *****/
 /****************************/
-sys Int (0..5) irrigationFlow; //flow provided by the irrigation system
+sys Int (0..6) irrigationFlow; //flow provided by the irrigation system
 sys boolean deviationAlert;
 
 /*********************************/
@@ -31,7 +31,7 @@ sys boolean deviationAlert;
 /*********************************/
 //irrigation mode (SWITCHES)
 env Int (0..2) mode; //0 - for automatic, 1 - for manual, 2 - for scheduled
-env Int (0..5) manualModeUserFlow;
+env Int (0..6) manualModeUserFlow;
 
 //SENSORS
 env Int (0..3) rainPower;
