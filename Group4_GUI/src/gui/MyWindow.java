@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import sun.misc.GC;
+import tau.smlab.syntech.jtlv.Env;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -31,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.border.TitledBorder;
 
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 import com.sun.xml.internal.ws.util.StringUtils;
 
 import misc.ControllerExecutor;
@@ -50,11 +52,13 @@ import javax.swing.Timer;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.MatteBorder;
 
 public class MyWindow extends JFrame {
 
@@ -62,6 +66,7 @@ public class MyWindow extends JFrame {
 	public ControllerManager gm = new ControllerManager();
 	//Graphics
 	private JPanel contentPane;
+	private JPanel panel;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
 	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
@@ -71,13 +76,25 @@ public class MyWindow extends JFrame {
 	private JLabel timeLabel;
 	private JLabel temperatureLabel;
 	private JLabel modeLabel;
-	private JLabel irrigationFlowLabel;
-	private JLabel[] cloudLabels = new JLabel[3];
+	///private JLabel irrigationFlowLabel;
+	private JLabel[] flowerIcon = new JLabel[4];
+	private JLabel[] cloudIcon = new JLabel[8];
+	private JLabel[] tapIcon = new JLabel[2];
+	private JLabel[] dropIcon = new JLabel[14];
 	private TextField lowerBoundField;
 	private TextField upperBoundField;
 	private TextField upperBoundTextField; //Here user enters upper bound
 	private TextField lowerBoundTextField; //Here user enters lower bound
 	public Button but_sim1, but_sim2, but_sim3, but_sim4, but_stopSim, but_updateState; 
+	private Color nightBgCol = new Color(56, 66, 105);
+	private Color dayBgCol = new Color(255, 233, 224);
+	private Color nightLabelCol = new Color(153, 162, 196);
+	private Color dayLabelCol = new Color(204, 175, 175);
+	private Color dayButtonCol = new Color(240,211,211);
+	private Color nightButtonCol = new Color(61,73,117);
+	private int activeFlower = 0;
+	private int activeCloud = 0;
+	private int activeDrop = 0;
 	
 	//flags for set values
 	private boolean tempSet = false;
@@ -118,11 +135,20 @@ public class MyWindow extends JFrame {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 		setResizable(false);
 		setTitle("Irrigation System");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
+		//set frame icons
+		ImageIcon iconLogoSmall = new ImageIcon("img/icon-small.png");
+		//ImageIcon iconLogoMedium = new ImageIcon("img/icon-medium.png");
+		ImageIcon iconLogoLarge = new ImageIcon("img/icon-large.png");
+		ArrayList<Image> icons = new ArrayList<>();
+		icons.add(iconLogoSmall.getImage());
+		//icons.add(iconLogoMedium.getImage());
+		icons.add(iconLogoLarge.getImage());
+		this.setIconImages(icons);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -339,6 +365,7 @@ public class MyWindow extends JFrame {
 		 * Update state button
 		 */
 		but_updateState = new Button("Update state");
+		but_updateState.setFont(new Font("Assistant", Font.PLAIN, 17));
 		but_updateState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//take value of lower bound and upper bound
@@ -393,25 +420,30 @@ public class MyWindow extends JFrame {
 				updatePicture();
 			}
 		});
+		
+		
 		menuBar.add(but_updateState);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
-		JPanel panel = new JPanel();
-		panel.setBounds(10, 11, 591, 518);
-		panel.setBackground(Color.WHITE);
-		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel = new JPanel();
+		panel.setBounds(10, 11, 591, 553);
+		panel.setBorder(null);
 		panel.setLayout(null);
 		
 		
 		/*
 		 * Time label.
 		 */
+		moistureLevelLabel = new JLabel("Moisture Level:");
+		moistureLevelLabel.setFont(new Font("Assistant", Font.BOLD, 20));
+		moistureLevelLabel.setBounds(10, 10, 204, 47);
+		panel.add(moistureLevelLabel);
 		timeLabel = new JLabel("");
-		timeLabel.setBounds(10, 58, 204, 47);
+		timeLabel.setBounds(10, 50, 204, 47);
 		panel.add(timeLabel);
-		timeLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
+		timeLabel.setFont(new Font("Assistant", Font.BOLD, 20));
 		timeLabel.setText("Time: " + String.valueOf(gm.ENVtime) + ":00");
 		
 		
@@ -419,8 +451,8 @@ public class MyWindow extends JFrame {
 		 * Temperature label.
 		 */
 		temperatureLabel = new JLabel("Temperature:");
-		temperatureLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
-		temperatureLabel.setBounds(10, 107, 204, 47);
+		temperatureLabel.setFont(new Font("Assistant", Font.BOLD, 20));
+		temperatureLabel.setBounds(10, 90, 204, 47);
 		panel.add(temperatureLabel);
 		
 		
@@ -428,32 +460,10 @@ public class MyWindow extends JFrame {
 		 * Mode label
 		 */
 		modeLabel = new JLabel("Mode:");
-		modeLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
-		modeLabel.setBounds(10, 165, 204, 47);
+		modeLabel.setFont(new Font("Assistant", Font.BOLD, 20));
+		modeLabel.setBounds(10, 130, 204, 47);
 		panel.add(modeLabel);
 		
-		
-		
-		/*
-		 * Clouds labels
-		 */
-		cloudLabels[0] = new JLabel("");
-		cloudLabels[0].setBounds(224, 31, 250, 159);
-		cloudLabels[0].setForeground(Color.WHITE);
-		cloudLabels[0].setIcon(new ImageIcon("img/cloud 1.png"));
-		panel.add(cloudLabels[0]);
-		
-		cloudLabels[1] = new JLabel("");
-		cloudLabels[1].setBounds(224, 31, 250, 159);
-		cloudLabels[1].setForeground(Color.WHITE);
-		cloudLabels[1].setIcon(new ImageIcon("img/cloud 2.png"));
-		panel.add(cloudLabels[1]);
-		
-		cloudLabels[2] = new JLabel("");
-		cloudLabels[2].setBounds(224, 31, 250, 159);
-		cloudLabels[2].setForeground(Color.WHITE);
-		cloudLabels[2].setIcon(new ImageIcon("img/cloud 3.png"));
-		panel.add(cloudLabels[2]);
 		
 		
 
@@ -462,7 +472,8 @@ public class MyWindow extends JFrame {
 		 * Text field for lower bound
 		 */
 		upperBoundTextField = new TextField();
-		upperBoundTextField.setBounds(157, 256, 24, 19);
+		upperBoundTextField.setFont(new Font("Assistant", Font.PLAIN, 13));
+		upperBoundTextField.setBounds(185, 218, 24, 19);
 		panel.add(upperBoundTextField);
 
 		
@@ -471,7 +482,8 @@ public class MyWindow extends JFrame {
 		 * Text field for upper bound
 		 */
 		lowerBoundTextField = new TextField();
-		lowerBoundTextField.setBounds(157, 295, 24, 19);
+		lowerBoundTextField.setFont(new Font("Assistant", Font.PLAIN, 13));
+		lowerBoundTextField.setBounds(185, 257, 24, 19);
 		panel.add(lowerBoundTextField);
 
 		
@@ -481,19 +493,16 @@ public class MyWindow extends JFrame {
 		 */
 		alertLabel = new JLabel("");
 		alertLabel.setForeground(Color.WHITE);
-		alertLabel.setBounds(464, 461, 38, 46);
+		alertLabel.setBounds(50, 350, 70, 79);
 		alertLabel.setForeground(Color.WHITE);
-		alertLabel.setIcon(new ImageIcon("img/alert.png"));
+		alertLabel.setIcon(new ImageIcon("img/caution-sign.png"));
 		panel.add(alertLabel);
+		this.alertLabel.setVisible(false);
 		
 		
 		/*
 		 * Moisture level label
 		 */
-		moistureLevelLabel = new JLabel("Moisture Level:");
-		moistureLevelLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 22));
-		moistureLevelLabel.setBounds(10, 11, 204, 47);
-		panel.add(moistureLevelLabel);
 		
 		
 		
@@ -502,7 +511,8 @@ public class MyWindow extends JFrame {
 		 * Simulation buttons
 		 */
 		but_sim1 = new Button("Drought Simulation");
-		but_sim1.setBounds(611, 270, 167, 50);
+		but_sim1.setFont(new Font("Assistant", Font.BOLD, 15));
+		but_sim1.setBounds(611, 240, 167, 50);
 		but_sim1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -516,7 +526,8 @@ public class MyWindow extends JFrame {
 		});
 		
 		but_sim2 = new Button("Rainy Simulation");
-		but_sim2.setBounds(611, 333, 167, 50);
+		but_sim2.setFont(new Font("Assistant", Font.BOLD, 15));
+		but_sim2.setBounds(611, 303, 167, 50);
 		but_sim2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -530,7 +541,8 @@ public class MyWindow extends JFrame {
 		});
 		
 		but_sim3 = new Button("Mode Switch Sim");
-		but_sim3.setBounds(611, 396, 167, 50);
+		but_sim3.setFont(new Font("Assistant", Font.BOLD, 15));
+		but_sim3.setBounds(611, 366, 167, 50);
 		but_sim3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -543,25 +555,10 @@ public class MyWindow extends JFrame {
 			}
 		});
 		
-		
-		but_sim4 = new Button("Normal Weather Sim");
-		but_sim4.setBounds(611, 459, 167, 50);
-		contentPane.add(but_sim4);
-		but_sim4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					simulation4(selfRef);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				} catch (ControllerExecutorException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		
 		but_stopSim = new Button("Stop Simulation");
-		but_stopSim.setBounds(611, 200, 167, 50);
-		but_stopSim.setEnabled(false);
+		but_stopSim.setFont(new Font("Assistant", Font.BOLD, 15));
+		but_stopSim.setBounds(611, 323, 167, 50);
+		but_stopSim.setVisible(false);
 		but_stopSim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(timer != null) {
@@ -576,59 +573,108 @@ public class MyWindow extends JFrame {
 		});
 		
 		
+		//flowers
+		String deadOrAlive = "";
+		String dayOrNight = "day";
+		for(int i = 0; i < 4; i++) {
+		flowerIcon[i] = new JLabel();
+		flowerIcon[i].setBounds(187, 306, 278, 232);
+		if(i == 2) dayOrNight = "night";
+		deadOrAlive = i%2 == 0 ? "" : "dead-";
+		flowerIcon[i].setIcon(new ImageIcon("img/"+dayOrNight+"/"+deadOrAlive+"flower.png"));
+		panel.add(flowerIcon[i]);
+		flowerIcon[i].setVisible(false);
+		}
+		
+		
+		//clouds
+		dayOrNight = "day";
+		int k;
+		for(int j = 0; j < 2; j++) {
+			if(j == 1) dayOrNight = "night";
+			for(int i = 0; i < 4; i++) {
+				k = j*4 + i;
+				cloudIcon[k] = new JLabel();
+				cloudIcon[k].setBounds(224, 31, 205, 319);
+				cloudIcon[k].setIcon(new ImageIcon("img/"+dayOrNight+"/cloud"+i+".png"));
+				panel.add(cloudIcon[k]);
+				cloudIcon[k].setVisible(false);
+			}
+		}
+		
+		
+		//taps
+		tapIcon[0] = new JLabel();
+		tapIcon[0].setBounds(482,367,37,43);
+		tapIcon[0].setIcon(new ImageIcon("img/day/tap.png"));
+		tapIcon[1] = new JLabel();
+		tapIcon[1].setBounds(482,367,37,43);
+		tapIcon[1].setIcon(new ImageIcon("img/night/tap.png"));
+		panel.add(tapIcon[0]);
+		panel.add(tapIcon[1]);
+		tapIcon[0].setVisible(false);
+		tapIcon[1].setVisible(false);
+		
+		//drops
+		dayOrNight = "day";
+		for(int j = 0; j < 2; j++) {
+			if(j == 1) dayOrNight = "night";
+			for(int i = 0; i < 7; i++) {
+				k = j*7 + i;
+				dropIcon[k] = new JLabel();
+				dropIcon[k].setBounds(478, 415, 25, 39);
+				dropIcon[k].setIcon(new ImageIcon("img/"+dayOrNight+"/drop"+i+".png"));
+				panel.add(dropIcon[k]);
+				dropIcon[k].setVisible(false);
+			}
+		}
 		
 		/*
-		 * Constant pictures and texts.
+		 * Constant pictures and texts
 		 */
-		JLabel treeIcon = new JLabel("");
-		treeIcon.setBounds(187, 213, 256, 294);
-		treeIcon.setForeground(Color.WHITE);
-		treeIcon.setIcon(new ImageIcon("img/tree.jpg"));
-		panel.add(treeIcon);
-
 		
-		
-		JLabel groupLogo = new JLabel("");
-		groupLogo.setBounds(626, 11, 140, 178);
+		//logo		
+		JLabel groupLogo = new JLabel();
+		groupLogo.setBounds(620, 11, 150, 150);
 		groupLogo.setBackground(Color.WHITE);
-		groupLogo.setIcon(new ImageIcon("img/irrigation logo.jpg"));
+		groupLogo.setIcon(new ImageIcon("img/logo.png"));
 		contentPane.setLayout(null);
 		
 		
-		JLabel tapIcon = new JLabel("");
-		tapIcon.setBounds(453, 367, 81, 54);
-		tapIcon.setForeground(Color.WHITE);
-		tapIcon.setIcon(new ImageIcon("img/tap.jpg"));
-		panel.add(tapIcon);
+		//upper and lower bound image
+		JLabel boundsImg = new JLabel("");
+		boundsImg.setBounds(3, 210, 192, 91);
+		boundsImg.setIcon(new ImageIcon("img/upper-lower-bound.png"));
+		boundsImg.setForeground(Color.WHITE);
+		panel.add(boundsImg);
 		
 		
-		lowerBoundField = new TextField();
-		lowerBoundField.setBackground(Color.RED);
-		lowerBoundField.setEditable(false);
-		lowerBoundField.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lowerBoundField.setText("Required Lower Bound");
-		lowerBoundField.setBounds(10, 295, 143, 19);
-		panel.add(lowerBoundField);
+		////lowerBoundField = new TextField();
+		////lowerBoundField.setBackground(Color.RED);
+		////lowerBoundField.setEditable(false);
+		////lowerBoundField.setFont(new Font("Dialog", Font.PLAIN, 14));
+		////lowerBoundField.setText("Required Lower Bound");
+		////lowerBoundField.setBounds(10, 295, 143, 19);
+		////panel.add(lowerBoundField);
+		
+		////upperBoundField = new TextField();
+		////upperBoundField.setBackground(Color.CYAN);
+		////upperBoundField.setText("Required Upper Bound");
+		////upperBoundField.setFont(new Font("Dialog", Font.PLAIN, 14));
+		////upperBoundField.setEditable(false);
+		////upperBoundField.setBounds(10, 256, 143, 19);
+		////panel.add(upperBoundField);	
 		
 		
-		upperBoundField = new TextField();
-		upperBoundField.setBackground(Color.CYAN);
-		upperBoundField.setText("Required Upper Bound");
-		upperBoundField.setFont(new Font("Dialog", Font.PLAIN, 14));
-		upperBoundField.setEditable(false);
-		upperBoundField.setBounds(10, 256, 143, 19);
-		panel.add(upperBoundField);
+		///JLabel lblOutputs = new JLabel("Outputs:");
+		///lblOutputs.setFont(new Font("Assistant", Font.BOLD, 22));
+		///lblOutputs.setBounds(450, 291, 113, 47);
+		///panel.add(lblOutputs);
 		
-		
-		JLabel lblOutputs = new JLabel("Outputs:");
-		lblOutputs.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 25));
-		lblOutputs.setBounds(464, 292, 88, 47);
-		panel.add(lblOutputs);
-		
-		irrigationFlowLabel = new JLabel("");
-		irrigationFlowLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 25));
-		irrigationFlowLabel.setBounds(543, 367, 38, 47);
-		panel.add(irrigationFlowLabel);
+		///irrigationFlowLabel = new JLabel("");
+		///irrigationFlowLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 25));
+		///irrigationFlowLabel.setBounds(543, 367, 38, 47);
+		///panel.add(irrigationFlowLabel);
 		contentPane.add(panel);
 		contentPane.add(groupLogo);
 		contentPane.add(but_stopSim);
@@ -636,12 +682,139 @@ public class MyWindow extends JFrame {
 		contentPane.add(but_sim2);
 		contentPane.add(but_sim3);
 		
-
 		
+		but_sim4 = new Button("Normal Weather Sim");
+		but_sim4.setFont(new Font("Assistant", Font.BOLD, 14));
+		but_sim4.setBounds(611, 429, 167, 50);
+		contentPane.add(but_sim4);
+		but_sim4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					simulation4(selfRef);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				} catch (ControllerExecutorException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+
+		boolean isNight = (gm.ENVtime > 21 || gm.ENVtime < 5);
+		if(isNight) {
+			updateNightPicture(false);
+			//set all flowers' visibility to false except the living night flower
+		}
+		else {
+			updateDayPicture(false);
+			//set all flowers' visibility to false except the dead night flower
+		}
 		
 	}
 	
+	void updateDayPicture() {
+		updateDayPicture(true);
+	}
+	
+	
+	void updateDayPicture(boolean takeValuesFromController) {
+		
+		//update from night to day
+		if(gm.ENVtime == 6 || !takeValuesFromController) {
+			//update background color
+			panel.setBackground(dayBgCol);
+			contentPane.setBackground(dayBgCol);
+			//update tap
+			tapIcon[0].setVisible(true);
+			tapIcon[1].setVisible(false);
+			//update labels' colors
+			moistureLevelLabel.setForeground(dayLabelCol);
+			timeLabel.setForeground(dayLabelCol);
+			temperatureLabel.setForeground(dayLabelCol);
+			modeLabel.setForeground(dayLabelCol);
+			//update buttons' colors
+			but_sim1.setBackground(dayButtonCol);
+			but_sim1.setForeground(dayLabelCol);
+			but_sim2.setBackground(dayButtonCol);
+			but_sim2.setForeground(dayLabelCol);
+			but_sim3.setBackground(dayButtonCol);
+			but_sim3.setForeground(dayLabelCol);
+			but_sim4.setBackground(dayButtonCol);
+			but_sim4.setForeground(dayLabelCol);
+			but_stopSim.setBackground(dayButtonCol);
+			but_stopSim.setForeground(dayLabelCol);
+			
+		}
+		if(takeValuesFromController) {
+
+		}
+		flowerIcon[activeFlower].setVisible(false);
+		cloudIcon[activeCloud].setVisible(false);
+		dropIcon[activeDrop].setVisible(false);
+		activeFlower = (gm.SYSdeviationAlert ? 1 : 0);
+		activeCloud = gm.ENVrainPower;
+		activeDrop = gm.SYSirrigationFlow;
+		flowerIcon[activeFlower].setVisible(true);
+		cloudIcon[activeCloud].setVisible(true);
+		dropIcon[activeDrop].setVisible(true);
+
+	}
+	
+	
+	void updateNightPicture() {
+		updateNightPicture(true);
+	}
+	
+	
+	void updateNightPicture(boolean takeValuesFromController) {
+		//update from day to night
+		if(gm.ENVtime == 22 || !takeValuesFromController) {
+			//update background color
+			panel.setBackground(nightBgCol);
+			contentPane.setBackground(nightBgCol);
+			//update tap
+			tapIcon[0].setVisible(false);
+			tapIcon[1].setVisible(true);
+			//update labels' colors
+			moistureLevelLabel.setForeground(nightLabelCol);
+			timeLabel.setForeground(nightLabelCol);
+			temperatureLabel.setForeground(nightLabelCol);
+			modeLabel.setForeground(nightLabelCol);
+			//update buttons' colors
+			but_sim1.setBackground(nightButtonCol);
+			but_sim1.setForeground(nightLabelCol);
+			but_sim2.setBackground(nightButtonCol);
+			but_sim2.setForeground(nightLabelCol);
+			but_sim3.setBackground(nightButtonCol);
+			but_sim3.setForeground(nightLabelCol);
+			but_sim4.setBackground(nightButtonCol);
+			but_sim4.setForeground(nightLabelCol);
+			but_stopSim.setBackground(nightButtonCol);
+			but_stopSim.setForeground(nightLabelCol);
+		}
+		if(takeValuesFromController) {
+		}
+		flowerIcon[activeFlower].setVisible(false);
+		cloudIcon[activeCloud].setVisible(false);
+		dropIcon[activeDrop].setVisible(false);
+		activeFlower = (gm.SYSdeviationAlert ? 3 : 2);
+		activeCloud = gm.ENVrainPower+4;
+		activeDrop = gm.SYSirrigationFlow+7;
+		flowerIcon[activeFlower].setVisible(true);
+		cloudIcon[activeCloud].setVisible(true);
+		dropIcon[activeDrop].setVisible(true);
+
+	}
+	
 	void updatePicture() {
+		boolean isNight = (gm.ENVtime >= 22 || gm.ENVtime <= 5);
+		if(isNight) {
+			updateNightPicture();
+		}
+		else {
+			updateDayPicture();
+		}
+		
 		lowerBoundTextField.setText(gm.ENVlowerBound+"");
 		upperBoundTextField.setText(gm.ENVupperBound+"");
 
@@ -652,7 +825,7 @@ public class MyWindow extends JFrame {
 		if(minutes == 6) minutes = 0;
 		this.timeLabel.setText(("Time: " + String.valueOf(gm.ENVtime) + ":"+minutes+"0"));
 		this.moistureLevelLabel.setText(("Moisture Level: " + String.valueOf(gm.ENVmoistureLevel)));
-		this.irrigationFlowLabel.setText((String.valueOf(gm.SYSirrigationFlow)));
+		///this.irrigationFlowLabel.setText((String.valueOf(gm.SYSirrigationFlow)));
 		//Update Mode label
 		if (gm.ENVmode == 0) {
 			this.modeLabel.setText("Mode: Automatic");
@@ -673,27 +846,27 @@ public class MyWindow extends JFrame {
 		if (gm.ENVtemperature == 2) {
 			this.temperatureLabel.setText("Temperature: Hot");
 		}
-		//Update Clouds labels
+/*		//Update Clouds labels
 		if (gm.ENVrainPower == 0) {
-			this.cloudLabels[0].setVisible(false);
-			this.cloudLabels[1].setVisible(false);
-			this.cloudLabels[2].setVisible(false);
+			this.cloudIcon[0].setVisible(false);
+			this.cloudIcon[1].setVisible(false);
+			this.cloudIcon[2].setVisible(false);
 		}
 		if (gm.ENVrainPower == 1) {
-			this.cloudLabels[0].setVisible(true);
-			this.cloudLabels[1].setVisible(false);
-			this.cloudLabels[2].setVisible(false);
+			this.cloudIcon[0].setVisible(true);
+			this.cloudIcon[1].setVisible(false);
+			this.cloudIcon[2].setVisible(false);
 		}
 		if (gm.ENVrainPower == 2) {
-			this.cloudLabels[0].setVisible(false);
-			this.cloudLabels[1].setVisible(true);
-			this.cloudLabels[2].setVisible(false);
+			this.cloudIcon[0].setVisible(false);
+			this.cloudIcon[1].setVisible(true);
+			this.cloudIcon[2].setVisible(false);
 		}
 		if (gm.ENVrainPower == 3) {
-			this.cloudLabels[0].setVisible(false);
-			this.cloudLabels[1].setVisible(false);
-			this.cloudLabels[2].setVisible(true);
-		}
+			this.cloudIcon[0].setVisible(false);
+			this.cloudIcon[1].setVisible(false);
+			this.cloudIcon[2].setVisible(true);
+		}*/
 	}
 	
 	
@@ -709,12 +882,12 @@ public class MyWindow extends JFrame {
 			item = menu.getMenu(i);
 			if(item != null) item.setEnabled(toEnable);
 		}
-		window.but_sim1.setEnabled(toEnable);
-		window.but_sim2.setEnabled(toEnable);
-		window.but_sim3.setEnabled(toEnable);
-		window.but_sim4.setEnabled(toEnable);
+		window.but_sim1.setVisible(toEnable);
+		window.but_sim2.setVisible(toEnable);
+		window.but_sim3.setVisible(toEnable);
+		window.but_sim4.setVisible(toEnable);
 		window.but_updateState.setEnabled(toEnable);
-		window.but_stopSim.setEnabled(!toEnable);
+		window.but_stopSim.setVisible(!toEnable);
 
 	}
 	
@@ -726,8 +899,6 @@ public class MyWindow extends JFrame {
 	 */
 	public static void disableButtons(MyWindow window) {
 		enableOrDisableButtons(window, false);
-		window.but_stopSim.setBackground(Color.RED);
-		window.but_stopSim.setForeground(Color.WHITE);
 	}
 	
 	
@@ -737,9 +908,6 @@ public class MyWindow extends JFrame {
 	 */
 	public static void reenableButtons(MyWindow window) {
 		enableOrDisableButtons(window, true);
-		window.but_stopSim.setBackground(null);
-		window.but_stopSim.setForeground(null);
-
 	}	
 	
 	
