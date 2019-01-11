@@ -42,6 +42,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Frame;
 import java.awt.TextField;
 import java.awt.TextArea;
@@ -52,6 +53,7 @@ import javax.swing.Timer;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -95,6 +97,12 @@ public class MyWindow extends JFrame {
 	private int activeCloud = 0;
 	private int activeDrop = 0;
 	
+	Font labelFont;
+	Font updateStateFont;
+	Font largeSimFont;
+	Font smallSimFont;
+	Font upperLowerFont;
+	
 	//flags for set values
 	private boolean tempSet = false;
 	private boolean modeSet = false;
@@ -135,6 +143,18 @@ public class MyWindow extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		try {
+			labelFont = Font.createFont(Font.TRUETYPE_FONT, MyWindow.class.getResourceAsStream("Assistant-SemiBold.ttf"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		updateStateFont = labelFont.deriveFont(Font.PLAIN, 14f);
+		largeSimFont = labelFont.deriveFont(Font.BOLD, 15f);
+		smallSimFont = labelFont.deriveFont(Font.BOLD, 14f);
+		upperLowerFont = labelFont.deriveFont(Font.PLAIN, 13f);
+		labelFont = labelFont.deriveFont(Font.BOLD, 18f);
+		 
+		
 		setResizable(false);
 		setTitle("Irrigation System");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -364,7 +384,7 @@ public class MyWindow extends JFrame {
 		 * Update state button
 		 */
 		but_updateState = new Button("Update state");
-		but_updateState.setFont(new Font("Assistant", Font.PLAIN, 17));
+		but_updateState.setFont(updateStateFont);
 		but_updateState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//take value of lower bound and upper bound
@@ -440,7 +460,7 @@ public class MyWindow extends JFrame {
 		 * Moisture level label.
 		 */
 		moistureLevelLabel = new JLabel("Moisture Level:");
-		moistureLevelLabel.setFont(new Font("Assistant", Font.BOLD, 18));
+		moistureLevelLabel.setFont(labelFont);
 		moistureLevelLabel.setBounds(10, 10, 204, 47);
 		panel.add(moistureLevelLabel);
 		
@@ -450,7 +470,7 @@ public class MyWindow extends JFrame {
 		timeLabel = new JLabel("");
 		timeLabel.setBounds(10, 50, 204, 47);
 		panel.add(timeLabel);
-		timeLabel.setFont(new Font("Assistant", Font.BOLD, 18));
+		timeLabel.setFont(labelFont);
 		timeLabel.setText("Time: " + String.valueOf(gm.ENVtime) + ":00");
 		
 		
@@ -458,7 +478,7 @@ public class MyWindow extends JFrame {
 		 * Temperature label.
 		 */
 		temperatureLabel = new JLabel("Temperature:");
-		temperatureLabel.setFont(new Font("Assistant", Font.BOLD, 18));
+		temperatureLabel.setFont(labelFont);
 		temperatureLabel.setBounds(10, 90, 204, 47);
 		panel.add(temperatureLabel);
 		
@@ -467,7 +487,7 @@ public class MyWindow extends JFrame {
 		 * Mode label
 		 */
 		modeLabel = new JLabel("Mode:");
-		modeLabel.setFont(new Font("Assistant", Font.BOLD, 18));
+		modeLabel.setFont(labelFont);
 		modeLabel.setBounds(10, 130, 204, 47);
 		panel.add(modeLabel);
 		
@@ -479,7 +499,7 @@ public class MyWindow extends JFrame {
 		 * Text field for lower bound
 		 */
 		upperBoundTextField = new TextField();
-		upperBoundTextField.setFont(new Font("Assistant", Font.PLAIN, 13));
+		upperBoundTextField.setFont(upperLowerFont);
 		upperBoundTextField.setBounds(185, 218, 24, 19);
 		panel.add(upperBoundTextField);
 
@@ -489,7 +509,7 @@ public class MyWindow extends JFrame {
 		 * Text field for upper bound
 		 */
 		lowerBoundTextField = new TextField();
-		lowerBoundTextField.setFont(new Font("Assistant", Font.PLAIN, 13));
+		lowerBoundTextField.setFont(upperLowerFont);
 		lowerBoundTextField.setBounds(185, 257, 24, 19);
 		panel.add(lowerBoundTextField);
 
@@ -518,7 +538,7 @@ public class MyWindow extends JFrame {
 		 * Simulation buttons
 		 */
 		but_sim1 = new Button("Drought Simulation");
-		but_sim1.setFont(new Font("Assistant", Font.BOLD, 15));
+		but_sim1.setFont(largeSimFont);
 		but_sim1.setBounds(611, 240, 167, 50);
 		but_sim1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -533,7 +553,7 @@ public class MyWindow extends JFrame {
 		});
 		
 		but_sim2 = new Button("Rainy Simulation");
-		but_sim2.setFont(new Font("Assistant", Font.BOLD, 15));
+		but_sim2.setFont(largeSimFont);
 		but_sim2.setBounds(611, 303, 167, 50);
 		but_sim2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -548,7 +568,7 @@ public class MyWindow extends JFrame {
 		});
 		
 		but_sim3 = new Button("Mode Switch Sim");
-		but_sim3.setFont(new Font("Assistant", Font.BOLD, 15));
+		but_sim3.setFont(largeSimFont);
 		but_sim3.setBounds(611, 366, 167, 50);
 		but_sim3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -562,8 +582,24 @@ public class MyWindow extends JFrame {
 			}
 		});
 		
+		but_sim4 = new Button("Normal Weather Sim");
+		but_sim4.setFont(smallSimFont);
+		but_sim4.setBounds(611, 429, 167, 50);
+		contentPane.add(but_sim4);
+		but_sim4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					simulation4(selfRef);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				} catch (ControllerExecutorException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		but_stopSim = new Button("Stop Simulation");
-		but_stopSim.setFont(new Font("Assistant", Font.BOLD, 15));
+		but_stopSim.setFont(largeSimFont);
 		but_stopSim.setBounds(611, 323, 167, 50);
 		but_stopSim.setVisible(false);
 		but_stopSim.addActionListener(new ActionListener() {
@@ -664,21 +700,7 @@ public class MyWindow extends JFrame {
 		contentPane.add(but_sim3);
 		
 		
-		but_sim4 = new Button("Normal Weather Sim");
-		but_sim4.setFont(new Font("Assistant", Font.BOLD, 14));
-		but_sim4.setBounds(611, 429, 167, 50);
-		contentPane.add(but_sim4);
-		but_sim4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					simulation4(selfRef);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				} catch (ControllerExecutorException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
+
 		
 
 		boolean isNight = (gm.ENVtime > 21 || gm.ENVtime < 5);
