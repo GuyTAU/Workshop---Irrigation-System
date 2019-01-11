@@ -848,27 +848,6 @@ public class MyWindow extends JFrame {
 		if (gm.ENVtemperature == 2) {
 			this.temperatureLabel.setText("Temperature: Hot");
 		}
-/*		//Update Clouds labels
-		if (gm.ENVrainPower == 0) {
-			this.cloudIcon[0].setVisible(false);
-			this.cloudIcon[1].setVisible(false);
-			this.cloudIcon[2].setVisible(false);
-		}
-		if (gm.ENVrainPower == 1) {
-			this.cloudIcon[0].setVisible(true);
-			this.cloudIcon[1].setVisible(false);
-			this.cloudIcon[2].setVisible(false);
-		}
-		if (gm.ENVrainPower == 2) {
-			this.cloudIcon[0].setVisible(false);
-			this.cloudIcon[1].setVisible(true);
-			this.cloudIcon[2].setVisible(false);
-		}
-		if (gm.ENVrainPower == 3) {
-			this.cloudIcon[0].setVisible(false);
-			this.cloudIcon[1].setVisible(false);
-			this.cloudIcon[2].setVisible(true);
-		}*/
 	}
 	
 	
