@@ -76,7 +76,6 @@ public class MyWindow extends JFrame {
 	private JLabel timeLabel;
 	private JLabel temperatureLabel;
 	private JLabel modeLabel;
-	///private JLabel irrigationFlowLabel;
 	private JLabel[] flowerIcon = new JLabel[4];
 	private JLabel[] cloudIcon = new JLabel[8];
 	private JLabel[] tapIcon = new JLabel[2];
@@ -649,32 +648,6 @@ public class MyWindow extends JFrame {
 		panel.add(boundsImg);
 		
 		
-		////lowerBoundField = new TextField();
-		////lowerBoundField.setBackground(Color.RED);
-		////lowerBoundField.setEditable(false);
-		////lowerBoundField.setFont(new Font("Dialog", Font.PLAIN, 14));
-		////lowerBoundField.setText("Required Lower Bound");
-		////lowerBoundField.setBounds(10, 295, 143, 19);
-		////panel.add(lowerBoundField);
-		
-		////upperBoundField = new TextField();
-		////upperBoundField.setBackground(Color.CYAN);
-		////upperBoundField.setText("Required Upper Bound");
-		////upperBoundField.setFont(new Font("Dialog", Font.PLAIN, 14));
-		////upperBoundField.setEditable(false);
-		////upperBoundField.setBounds(10, 256, 143, 19);
-		////panel.add(upperBoundField);	
-		
-		
-		///JLabel lblOutputs = new JLabel("Outputs:");
-		///lblOutputs.setFont(new Font("Assistant", Font.BOLD, 22));
-		///lblOutputs.setBounds(450, 291, 113, 47);
-		///panel.add(lblOutputs);
-		
-		///irrigationFlowLabel = new JLabel("");
-		///irrigationFlowLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.PLAIN, 25));
-		///irrigationFlowLabel.setBounds(543, 367, 38, 47);
-		///panel.add(irrigationFlowLabel);
 		contentPane.add(panel);
 		contentPane.add(groupLogo);
 		contentPane.add(but_stopSim);
@@ -825,7 +798,6 @@ public class MyWindow extends JFrame {
 		if(minutes == 6) minutes = 0;
 		this.timeLabel.setText(("Time: " + String.valueOf(gm.ENVtime) + ":"+minutes+"0"));
 		this.moistureLevelLabel.setText(("Moisture Level: " + String.valueOf(gm.ENVmoistureLevel)));
-		///this.irrigationFlowLabel.setText((String.valueOf(gm.SYSirrigationFlow)));
 		//Update Mode label
 		if (gm.ENVmode == 0) {
 			this.modeLabel.setText("Mode: Automatic");
