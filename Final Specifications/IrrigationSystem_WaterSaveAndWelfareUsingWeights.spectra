@@ -10,11 +10,11 @@ module IrrigationSystem
 /*******************/
 /***** DEFINES *****/
 /*******************/	
-define minBoundDiff := 2; //2 IS THE MINIMUM DIFF! (NEED TO DECIDE ON A DIFF)
+define minBoundDiff := 2; //2 IS THE MINIMUM DIFF!
 define isBelowRange := (moistureLevel < lowerBound);
 define isAboveRange := (moistureLevel > upperBound);
 
-define effectiveFlow := irrigationFlow + rainPower; //add 2 since temperature is decreasing the effective flow (if cold/medium +2/+1). 
+define effectiveFlow := irrigationFlow + rainPower;
 define temperatureDecEffect := temperature + 1;
 
 define nextIsNight := (((hour >= 21) & (hour <= 23)) | ((hour >= 0) & (hour <= 4)));
