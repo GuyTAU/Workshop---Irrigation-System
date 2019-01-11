@@ -437,16 +437,20 @@ public class MyWindow extends JFrame {
 		
 		
 		/*
-		 * Time label.
+		 * Moisture level label.
 		 */
 		moistureLevelLabel = new JLabel("Moisture Level:");
-		moistureLevelLabel.setFont(new Font("Assistant", Font.BOLD, 20));
+		moistureLevelLabel.setFont(new Font("Assistant", Font.BOLD, 18));
 		moistureLevelLabel.setBounds(10, 10, 204, 47);
 		panel.add(moistureLevelLabel);
+		
+		/*
+		 * Time label.
+		 */
 		timeLabel = new JLabel("");
 		timeLabel.setBounds(10, 50, 204, 47);
 		panel.add(timeLabel);
-		timeLabel.setFont(new Font("Assistant", Font.BOLD, 20));
+		timeLabel.setFont(new Font("Assistant", Font.BOLD, 18));
 		timeLabel.setText("Time: " + String.valueOf(gm.ENVtime) + ":00");
 		
 		
@@ -454,7 +458,7 @@ public class MyWindow extends JFrame {
 		 * Temperature label.
 		 */
 		temperatureLabel = new JLabel("Temperature:");
-		temperatureLabel.setFont(new Font("Assistant", Font.BOLD, 20));
+		temperatureLabel.setFont(new Font("Assistant", Font.BOLD, 18));
 		temperatureLabel.setBounds(10, 90, 204, 47);
 		panel.add(temperatureLabel);
 		
@@ -463,7 +467,7 @@ public class MyWindow extends JFrame {
 		 * Mode label
 		 */
 		modeLabel = new JLabel("Mode:");
-		modeLabel.setFont(new Font("Assistant", Font.BOLD, 20));
+		modeLabel.setFont(new Font("Assistant", Font.BOLD, 18));
 		modeLabel.setBounds(10, 130, 204, 47);
 		panel.add(modeLabel);
 		
