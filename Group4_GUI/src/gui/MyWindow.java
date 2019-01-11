@@ -391,6 +391,10 @@ public class MyWindow extends JFrame {
 					JOptionPane.showMessageDialog(contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
+				if (upperBound - lowerBound < 2) {
+					JOptionPane.showMessageDialog(contentPane, "Upper bound has to be at least 2 moisture units above lower bound", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				gm.ENVlowerBound = Integer.parseInt(lowerBoundTextField.getText());
 				lowerBoundSet = true;
 				//Check all value were set by user
@@ -909,6 +913,10 @@ public class MyWindow extends JFrame {
 		window.upperBoundSet = true;
 		if (lowerBound > 15 || lowerBound < 0) {
 			JOptionPane.showMessageDialog(window.contentPane, "Lower bound value must be from 0 to 15", "Input is invalid", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		if (upperBound - lowerBound < 2) {
+			JOptionPane.showMessageDialog(window.contentPane, "Upper bound has to be at least 2 moisture units above lower bound", "Input is invalid", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		window.gm.ENVlowerBound = Integer.parseInt(window.lowerBoundTextField.getText());
