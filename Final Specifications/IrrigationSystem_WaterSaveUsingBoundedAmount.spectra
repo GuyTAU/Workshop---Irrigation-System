@@ -14,7 +14,7 @@ define minBoundDiff := 2; //2 IS THE MINIMUM DIFF BETWEEN BOUNDS.
 define isBelowRange := (moistureLevel < lowerBound);
 define isAboveRange := (moistureLevel > upperBound);
 
-define effectiveFlow := irrigationFlow + rainPower; //add 2 since temperature is decreasing the effective flow (if cold/medium +2/+1). 
+define effectiveFlow := irrigationFlow + rainPower; 
 define temperatureDecEffect := temperature + 1;
 
 define nextIsNight := (((hour >= 21) & (hour <= 23)) | ((hour >= 0) & (hour <= 4)));
@@ -68,7 +68,7 @@ asm G (hour = 23) -> (next(hour) = 23 | next(hour) = 0);  //keep increasing modu
 asm G (!(hour = 23)) -> ((next(hour) = hour) | (next(hour) = hour+1));
 asm GF (hour != next(hour)); //ensure time is progressing
  
-//hour changes at most every 6 states (the controller changes the hour after exactly 6 states)
+//hour changes at most every 6 states (Java changes the hour after exactly 6 states)
 counter hour_count(0..5) { 
 	hour_count = 0;
 	inc: (hour = next(hour));
@@ -105,7 +105,7 @@ asm G (((temperature = 2) & (effectiveFlow != 0)) & (moistureLevel + (effectiveF
 /***** GUARANTEES *****/
 /**********************/
 //AUTOMATIC MODE:
-gar G (((mode = 0) & isAboveRange) -> (irrigationFlow = 0)); //If we are above the range - do not irrigate. (there can be rain!)
+gar G (((mode = 0) & isAboveRange) -> (irrigationFlow = 0)); //If we are above the range - do not irrigate. (there can be rain)
 gar pRespondsToS(((mode = 0) & isBelowRange), ((mode = 0) -> !deviationAlert)); //If we are below the range, ensures that we will eventually be above minimum range.
 gar G deviationAlert = (isBelowRange | isAboveRange); //Alert in case of deviation.
 
@@ -166,9 +166,9 @@ gar G (mode = 2 & hour = 23 & !schedule_table[23]) -> (irrigationFlow = 0);
 
  
 //DAILY AMOUNT OF WATER USAGE IS RESTRICTED: 
-define maxWaterAmountPerDay := 2000;	
+define maxWaterAmountPerDay := 100;	
  
- sys Int(0..2020) DailyWaterAmount;
+ sys Int(0..120) DailyWaterAmount;
  
  gar DailyWaterAmount = 0; //initial value is 0
  gar G (PREV(mode = 0) & (mode = 0) & (!(PREV(hour = 23) & (hour = 0 )))) -> (next(DailyWaterAmount) = DailyWaterAmount + irrigationFlow); //add current amount of water to total daily usage 
