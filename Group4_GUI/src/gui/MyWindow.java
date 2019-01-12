@@ -891,7 +891,7 @@ public class MyWindow extends JFrame {
 				disableButtons(window);
 				window.gm.ENVrainPower = 0;
 				if ((window.gm.ENVtime >= 21 & window.gm.ENVtime <= 23) | (window.gm.ENVtime >= 0 & window.gm.ENVtime <= 4)) {
-					window.gm.ENVtemperature = 0;
+					window.gm.ENVtemperature = 1;
 				}
 				else {
 					window.gm.ENVtemperature = 2;
