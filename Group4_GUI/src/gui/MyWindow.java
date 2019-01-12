@@ -1,69 +1,33 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Image;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import javax.swing.border.EmptyBorder;
-
-import sun.misc.GC;
-import tau.smlab.syntech.jtlv.Env;
-
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.ButtonGroup;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JRadioButton;
-import java.awt.Choice;
 import java.awt.Color;
-import java.awt.Scrollbar;
 import java.awt.Button;
-import java.awt.Label;
-import java.awt.Canvas;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
-import javax.swing.border.TitledBorder;
-
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
-import com.sun.xml.internal.ws.util.StringUtils;
-
 import misc.ControllerExecutor;
 import misc.ControllerExecutorException;
-
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Frame;
 import java.awt.TextField;
-import java.awt.TextArea;
-import javax.swing.JTextPane;
-//import com.jgoodies.forms.factories.DefaultComponentFactory;
-import javax.swing.SwingConstants;
 import javax.swing.Timer;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.MatteBorder;
-
 public class MyWindow extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	//Controller manager
 	public ControllerManager gm = new ControllerManager();
 	//Graphics
@@ -82,8 +46,6 @@ public class MyWindow extends JFrame {
 	private JLabel[] cloudIcon = new JLabel[8];
 	private JLabel[] tapIcon = new JLabel[2];
 	private JLabel[] dropIcon = new JLabel[14];
-	private TextField lowerBoundField;
-	private TextField upperBoundField;
 	private TextField upperBoundTextField; //Here user enters upper bound
 	private TextField lowerBoundTextField; //Here user enters lower bound
 	public Button but_sim1, but_sim2, but_sim3, but_sim4, but_stopSim, but_updateState; 
@@ -125,7 +87,6 @@ public class MyWindow extends JFrame {
 			public void run() {
 				try {
 					MyWindow frame = new MyWindow();
-					//frame.gm = new ControllerManager();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -143,6 +104,7 @@ public class MyWindow extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//configure fonts
 		try {
 			labelFont = Font.createFont(Font.TRUETYPE_FONT, MyWindow.class.getResourceAsStream("Assistant-SemiBold.ttf"));
 		} catch (Exception e) {
@@ -153,21 +115,18 @@ public class MyWindow extends JFrame {
 		smallSimFont = labelFont.deriveFont(Font.BOLD, 14f);
 		upperLowerFont = labelFont.deriveFont(Font.PLAIN, 13f);
 		labelFont = labelFont.deriveFont(Font.BOLD, 18f);
-		 
+		//set frame icons
+		ImageIcon iconLogoSmall = new ImageIcon("img/icon-small.png");
+		ImageIcon iconLogoLarge = new ImageIcon("img/icon-large.png");
+		ArrayList<Image> icons = new ArrayList<>();
+		icons.add(iconLogoSmall.getImage());
+		icons.add(iconLogoLarge.getImage());
+		this.setIconImages(icons);
 		
 		setResizable(false);
 		setTitle("Irrigation System");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
-		//set frame icons
-		ImageIcon iconLogoSmall = new ImageIcon("img/icon-small.png");
-		//ImageIcon iconLogoMedium = new ImageIcon("img/icon-medium.png");
-		ImageIcon iconLogoLarge = new ImageIcon("img/icon-large.png");
-		ArrayList<Image> icons = new ArrayList<>();
-		icons.add(iconLogoSmall.getImage());
-		//icons.add(iconLogoMedium.getImage());
-		icons.add(iconLogoLarge.getImage());
-		this.setIconImages(icons);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -209,8 +168,6 @@ public class MyWindow extends JFrame {
 		});
 		buttonGroup.add(chckbxmntmHot);
 		mnTemperature.add(chckbxmntmHot);
-		
-		
 		
 		
 		/*
@@ -291,10 +248,9 @@ public class MyWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmode = 2;
 				modeSet = true;
-				Frame frame = Frame.getFrames()[0];
 				ScheduledSettingsWindow scheduledWindow = new ScheduledSettingsWindow(gm,
-																						frame.getLocation().x + frame.getWidth()/7,
-																						frame.getLocation().y + frame.getHeight()/3);
+																						selfRef.getLocation().x + selfRef.getWidth()/7,
+																						selfRef.getLocation().y + selfRef.getHeight()/3);
 				scheduledWindow.setVisible(true);
 			}
 		});
@@ -309,75 +265,55 @@ public class MyWindow extends JFrame {
 		JMenu mnManualIrrigationFlow = new JMenu("Manual/Scheduled Irrigation Flow");
 		menuBar.add(mnManualIrrigationFlow);
 		
-		JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem("0");
-		checkBoxMenuItem.addActionListener(new ActionListener() {
+		JCheckBoxMenuItem[] checkBoxMenuItem = new JCheckBoxMenuItem[7];
+		for(int i = 0; i <= 6; i++) {
+			checkBoxMenuItem[i] = new JCheckBoxMenuItem(i+"");
+			buttonGroup_3.add(checkBoxMenuItem[i]);
+			mnManualIrrigationFlow.add(checkBoxMenuItem[i]);
+		}
+		
+		checkBoxMenuItem[0].addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 0;
 				irrigationFlowSet = true;
 			}
 		});
-		buttonGroup_3.add(checkBoxMenuItem);
-		mnManualIrrigationFlow.add(checkBoxMenuItem);
-		
-		JCheckBoxMenuItem checkBoxMenuItem_1 = new JCheckBoxMenuItem("1");
-		checkBoxMenuItem_1.addActionListener(new ActionListener() {
+		checkBoxMenuItem[1].addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 1;
 				irrigationFlowSet = true;
 			}
 		});
-		buttonGroup_3.add(checkBoxMenuItem_1);
-		mnManualIrrigationFlow.add(checkBoxMenuItem_1);
-		
-		JCheckBoxMenuItem checkBoxMenuItem_2 = new JCheckBoxMenuItem("2");
-		checkBoxMenuItem_2.addActionListener(new ActionListener() {
+		checkBoxMenuItem[2].addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 2;
 				irrigationFlowSet = true;
 			}
 		});
-		buttonGroup_3.add(checkBoxMenuItem_2);
-		mnManualIrrigationFlow.add(checkBoxMenuItem_2);
-		
-		JCheckBoxMenuItem checkBoxMenuItem_3 = new JCheckBoxMenuItem("3");
-		checkBoxMenuItem_3.addActionListener(new ActionListener() {
+		checkBoxMenuItem[3].addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 3;
 				irrigationFlowSet = true;
 			}
 		});
-		buttonGroup_3.add(checkBoxMenuItem_3);
-		mnManualIrrigationFlow.add(checkBoxMenuItem_3);
-		
-		JCheckBoxMenuItem checkBoxMenuItem_4 = new JCheckBoxMenuItem("4");
-		checkBoxMenuItem_4.addActionListener(new ActionListener() {
+		checkBoxMenuItem[4].addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 4;
 				irrigationFlowSet = true;
 			}
 		});
-		buttonGroup_3.add(checkBoxMenuItem_4);
-		mnManualIrrigationFlow.add(checkBoxMenuItem_4);
-		
-		JCheckBoxMenuItem checkBoxMenuItem_5 = new JCheckBoxMenuItem("5");
-		checkBoxMenuItem_5.addActionListener(new ActionListener() {
+		checkBoxMenuItem[5].addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 5;
 				irrigationFlowSet = true;
 			}
 		});
-		buttonGroup_3.add(checkBoxMenuItem_5);
-		mnManualIrrigationFlow.add(checkBoxMenuItem_5);
-		
-		JCheckBoxMenuItem checkBoxMenuItem_6 = new JCheckBoxMenuItem("6");
-		checkBoxMenuItem_6.addActionListener(new ActionListener() {
+		checkBoxMenuItem[6].addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gm.ENVmanualModeUserFlow = 6;
 				irrigationFlowSet = true;
 			}
 		});
-		buttonGroup_3.add(checkBoxMenuItem_6);
-		mnManualIrrigationFlow.add(checkBoxMenuItem_6);
 				
 		
 		/*
@@ -700,9 +636,6 @@ public class MyWindow extends JFrame {
 		contentPane.add(but_sim3);
 		
 		
-
-		
-
 		boolean isNight = (gm.ENVtime > 21 || gm.ENVtime < 5);
 		if(isNight) {
 			updateNightPicture(false);
@@ -715,11 +648,19 @@ public class MyWindow extends JFrame {
 		
 	}
 	
+	
+	/**
+	 * Updates the images, background, labels, buttons according to the values given to and by the controller, with the day time design. 
+	 */
 	void updateDayPicture() {
 		updateDayPicture(true);
 	}
 	
 	
+	/**
+	 * Updates the images, background, labels, buttons according to the values given to and by the controller, with the day time design. 
+	 * @param takeValuesFromController If set to false, sets the background color (according to the time), visible tap to night tap and the color of the buttons and labels
+	 */
 	void updateDayPicture(boolean takeValuesFromController) {
 		
 		//update from night to day
@@ -748,9 +689,6 @@ public class MyWindow extends JFrame {
 			but_stopSim.setForeground(dayLabelCol);
 			
 		}
-		if(takeValuesFromController) {
-
-		}
 		flowerIcon[activeFlower].setVisible(false);
 		cloudIcon[activeCloud].setVisible(false);
 		dropIcon[activeDrop].setVisible(false);
@@ -763,12 +701,18 @@ public class MyWindow extends JFrame {
 
 	}
 	
-	
+	/**
+	 * Updates the images, background, labels, buttons according to the values given to and by the controller, with the night time design. 
+	 */
 	void updateNightPicture() {
 		updateNightPicture(true);
 	}
 	
 	
+	/**
+	 * Updates the images, background, labels, buttons according to the values given to and by the controller, with the night time design. 
+	 * @param takeValuesFromController If set to false, sets the background color (according to the time), visible tap to night tap and the color of the buttons and labels
+	 */
 	void updateNightPicture(boolean takeValuesFromController) {
 		//update from day to night
 		if(gm.ENVtime == 22 || !takeValuesFromController) {
@@ -795,8 +739,6 @@ public class MyWindow extends JFrame {
 			but_stopSim.setBackground(nightButtonCol);
 			but_stopSim.setForeground(nightLabelCol);
 		}
-		if(takeValuesFromController) {
-		}
 		flowerIcon[activeFlower].setVisible(false);
 		cloudIcon[activeCloud].setVisible(false);
 		dropIcon[activeDrop].setVisible(false);
@@ -809,6 +751,11 @@ public class MyWindow extends JFrame {
 
 	}
 	
+	
+	/**
+	 * Changes the appearance of the frame's labels, buttons, images and background
+	 * according to the values given by and to the controller.
+	 */
 	void updatePicture() {
 		boolean isNight = (gm.ENVtime >= 22 || gm.ENVtime <= 5);
 		if(isNight) {

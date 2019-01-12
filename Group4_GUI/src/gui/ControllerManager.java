@@ -1,17 +1,9 @@
 package gui;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import net.sf.javabdd.BDD;
-import net.sf.javabdd.BDD.BDDIterator;
-import tau.smlab.syntech.gamemodel.PlayerModule;
-import tau.smlab.syntech.games.util.SaveLoadWithDomains;
-import tau.smlab.syntech.jtlv.BDDPackage;
-import tau.smlab.syntech.jtlv.Env;
 import misc.ControllerExecutor;
 import misc.ControllerExecutorException;
 
