@@ -636,7 +636,7 @@ public class MyWindow extends JFrame {
 		contentPane.add(but_sim3);
 		
 		
-		boolean isNight = (gm.ENVtime > 21 || gm.ENVtime < 5);
+		boolean isNight = (gm.ENVtime > 21 || gm.ENVtime <= 5);
 		if(isNight) {
 			updateNightPicture(false);
 			//set all flowers' visibility to false except the living night flower
@@ -664,7 +664,7 @@ public class MyWindow extends JFrame {
 	void updateDayPicture(boolean takeValuesFromController) {
 		
 		//update from night to day
-		if(gm.ENVtime == 6 || !takeValuesFromController) {
+		if((gm.ENVtime == 5 && minutes == 1) || !takeValuesFromController) {
 			//update background color
 			panel.setBackground(dayBgCol);
 			contentPane.setBackground(dayBgCol);
@@ -715,7 +715,7 @@ public class MyWindow extends JFrame {
 	 */
 	void updateNightPicture(boolean takeValuesFromController) {
 		//update from day to night
-		if(gm.ENVtime == 22 || !takeValuesFromController) {
+		if((gm.ENVtime == 21 && minutes == 1) || !takeValuesFromController) {
 			//update background color
 			panel.setBackground(nightBgCol);
 			contentPane.setBackground(nightBgCol);
@@ -757,7 +757,9 @@ public class MyWindow extends JFrame {
 	 * according to the values given by and to the controller.
 	 */
 	void updatePicture() {
-		boolean isNight = (gm.ENVtime >= 22 || gm.ENVtime <= 5);
+		minutes++;
+		if(minutes == 6) minutes = 0;
+		boolean isNight = (gm.ENVtime >= 22 || (gm.ENVtime == 21 && minutes >= 1) || gm.ENVtime <= 4 || (gm.ENVtime == 5 && minutes == 0));
 		if(isNight) {
 			updateNightPicture();
 		}
@@ -771,8 +773,6 @@ public class MyWindow extends JFrame {
 		this.alertLabel.setVisible(gm.SYSdeviationAlert);
 		this.upperBoundTextField.setEditable(false); //once decided = cannot be changed
 		this.lowerBoundTextField.setEditable(false); //once decided = cannot be changed
-		minutes++;
-		if(minutes == 6) minutes = 0;
 		this.timeLabel.setText(("Time: " + String.valueOf(gm.ENVtime) + ":"+minutes+"0"));
 		this.moistureLevelLabel.setText(("Moisture Level: " + String.valueOf(gm.ENVmoistureLevel)));
 		//Update Mode label
@@ -890,7 +890,7 @@ public class MyWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				disableButtons(window);
 				window.gm.ENVrainPower = 0;
-				if ((window.gm.ENVtime >= 21 & window.gm.ENVtime <= 23) || (window.gm.ENVtime >= 0 & window.gm.ENVtime <= 4)) {
+				if ((window.gm.ENVtime >= 21 && window.gm.ENVtime <= 23) || (window.gm.ENVtime >= 0 && window.gm.ENVtime <= 4)) {
 					window.gm.ENVtemperature = 1;
 				}
 				else {
@@ -927,7 +927,7 @@ public class MyWindow extends JFrame {
 				Random rand = new Random();
 				int randomValue = rand.nextInt(4)+1;
 				window.gm.ENVrainPower = Math.min(randomValue, 3);
-				if ((window.gm.ENVtime >= 21 & window.gm.ENVtime <= 23) | (window.gm.ENVtime >= 0 & window.gm.ENVtime <= 4)) {
+				if ((window.gm.ENVtime >= 21 && window.gm.ENVtime <= 23) || (window.gm.ENVtime >= 0 && window.gm.ENVtime <= 4)) {
 					window.gm.ENVtemperature = 0;
 				}
 				else {
@@ -965,7 +965,7 @@ public class MyWindow extends JFrame {
 				Random rand = new Random();
 				int randomValue = rand.nextInt(3);
 				window.gm.ENVrainPower = 0;
-				if ((window.gm.ENVtime >= 21 & window.gm.ENVtime <= 23) | (window.gm.ENVtime >= 0 & window.gm.ENVtime <= 4)) {
+				if ((window.gm.ENVtime >= 21 && window.gm.ENVtime <= 23) || (window.gm.ENVtime >= 0 && window.gm.ENVtime <= 4)) {
 					window.gm.ENVtemperature = 0;
 				}
 				else {
