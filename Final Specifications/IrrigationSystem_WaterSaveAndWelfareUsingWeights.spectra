@@ -96,7 +96,7 @@ asm G (((temperature = 2) & (effectiveFlow != 0)) & (moistureLevel + (effectiveF
 /***** GUARANTEES *****/
 /**********************/
 //AUTOMATIC MODE:
-gar G (((mode = 0) & isAboveRange) -> (irrigationFlow = 0)); //If we are above the range - do not irrigate. (there can be rain!)
+gar G (((mode = 0) & isAboveRange) -> (irrigationFlow = 0)); //If we are above the range - do not irrigate. (there can be rain)
 gar pRespondsToS(((mode = 0) & isBelowRange), ((mode = 0) -> !deviationAlert)); //If we are below the range, ensures that we will eventually be above minimum range.
 gar G deviationAlert = (isBelowRange | isAboveRange); //Alert in case of deviation.
 
