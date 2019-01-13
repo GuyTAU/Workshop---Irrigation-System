@@ -14,7 +14,7 @@ define minBoundDiff := 3; //THE MINIMUM DIFF BETWEEN BOUNDS.
 define isBelowRange := (moistureLevel < lowerBound);
 define isAboveRange := (moistureLevel > upperBound);
 
-define effectiveFlow := irrigationFlow + rainPower; //add 2 since temperature is decreasing the effective flow (if cold/medium +2/+1). 
+define effectiveFlow := irrigationFlow + rainPower; 
 define temperatureDecEffect := temperature + 1;
 
 define nextIsNight := (((hour >= 21) & (hour <= 23)) | ((hour >= 0) & (hour <= 4)));
@@ -31,7 +31,7 @@ sys boolean deviationAlert;
 /*********************************/
 //irrigation mode (SWITCHES)
 env Int (0..2) mode; //0 - for automatic, 1 - for manual, 2 - for scheduled
-env Int (0..5) manualModeUserFlow;
+env Int (0..6) manualModeUserFlow;
 
 //SENSORS
 env Int (0..3) rainPower;
@@ -97,7 +97,7 @@ asm G (((temperature = 2) & (effectiveFlow != 0)) & (moistureLevel + (effectiveF
 /***** GUARANTEES *****/
 /**********************/
 //AUTOMATIC MODE:
-gar G (((mode = 0) & isAboveRange) -> (irrigationFlow = 0)); //If we are above the range - do not irrigate. (there can be rain!)
+gar G (((mode = 0) & isAboveRange) -> (irrigationFlow = 0)); //If we are above the range - do not irrigate. (there can be rain)
 gar pRespondsToS(((mode = 0) & isBelowRange), ((mode = 0) -> !deviationAlert)); //If we are below the range, ensures that we will eventually be above minimum range.
 gar G deviationAlert = (isBelowRange | isAboveRange); //Alert in case of deviation.
 
