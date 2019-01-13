@@ -31,7 +31,7 @@ sys boolean deviationAlert;
 /*********************************/
 //irrigation mode (SWITCHES)
 env Int (0..2) mode; //0 - for automatic, 1 - for manual, 2 - for scheduled
-env Int (0..5) manualModeUserFlow;
+env Int (0..6) manualModeUserFlow;
 
 //SENSORS
 env Int (0..3) rainPower;
