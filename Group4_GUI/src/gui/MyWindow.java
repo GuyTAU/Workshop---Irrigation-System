@@ -556,13 +556,13 @@ public class MyWindow extends JFrame {
 		String deadOrAlive = "";
 		String dayOrNight = "day";
 		for(int i = 0; i < 4; i++) {
-		flowerIcon[i] = new JLabel();
-		flowerIcon[i].setBounds(187, 306, 278, 232);
-		if(i == 2) dayOrNight = "night";
-		deadOrAlive = i%2 == 0 ? "" : "dead-";
-		flowerIcon[i].setIcon(new ImageIcon("img/"+dayOrNight+"/"+deadOrAlive+"flower.png"));
-		panel.add(flowerIcon[i]);
-		flowerIcon[i].setVisible(false);
+			flowerIcon[i] = new JLabel();
+			flowerIcon[i].setBounds(187, 306, 278, 232);
+			if(i == 2) dayOrNight = "night";
+			deadOrAlive = i%2 == 0 ? "" : "dead-";
+			flowerIcon[i].setIcon(new ImageIcon("img/"+dayOrNight+"/"+deadOrAlive+"flower.png"));
+			panel.add(flowerIcon[i]);
+			flowerIcon[i].setVisible(false);
 		}
 		
 		
